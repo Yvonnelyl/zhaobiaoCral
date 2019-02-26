@@ -11,39 +11,76 @@ import traceback
 
 
 class BaseSpider(spiders.Spider):
-
+    """
+    基础爬虫：包含爬取页面的功能函数
+    """
     def start_requests(self):
+        """
+        开始请求
+        :return:
+        """
         print('start_requests')
         for p in self.param:
             yield Request(self.start_url.format(self=self, **p), callback=self.parse, meta={"cln": p['meta']})
 
     def parse_list(self,dct, response):
-        print('start_parse_list')
+        """
+        处理列表方法
+        :param dct:
+        :param response:
+        :return:
+        """
         table = getattr(response, dct['table_row']['method'])(dct['table_row']['path'])
-        if 'item_loader' in dct:
-            for row in table:
-                row_item_loader = ItemLoader(item=items.OriginItem(), selector=row)
-                for name, param in dct['item_loader'].items():
-                    method = param[0]
-                    path = param[1]
-                    getattr(row_item_loader, method)(name, path)
-                row_item = row_item_loader.load_item()
+        for row in table:
+
+            if 'item_loader' in dct:
+                row_item = self.__load_item(dct['item_loader'], selector=row)
+                # 传给下一个函数
                 response.meta.update({'item': row_item})
+
                 if 'reuquest' in dct['yield']:
-                    for url in row_item['furl']:
-                        yield Request(
-                            url=self._relative_to_absolute(url, response),
-                            meta=response.meta,
-                            callback = getattr(self, dct['yield']['reuquest']['callback'])
-                        )
+                    yield from \
+                        self.__yield_request(row_item['furl'], dct['yield'], response)
+
+    def __load_item(self,dct, selector=None, response=None):
+        """
+        :param dct:  item_name and  xpath
+        :param selector:  提取目标
+        :param response: 提取目标
+        """
+        row_item_loader = ItemLoader(item=items.OriginItem(),
+                                     response=response, selector=selector)
+        for name, param in dct.items():
+            method = param[0]
+            path = param[1]
+            getattr(row_item_loader, method)(name, path)
+        return row_item_loader.load_item()
+
+    def __yield_request(self,url_list, dct_yield, response):
+        """
+        :param url_list:  请求列表
+        :param dct_yield:  含有回调函数名
+        :param response:
+        :return:
+        """
+        for url in url_list:
+            yield Request(
+                url=self._relative_to_absolute(url, response),
+                meta=response.meta,
+                callback=getattr(self, dct_yield['reuquest']['callback'])
+            )
 
     def parse_article(self, dct, response):
+        #
         if 'meta_item' in dct:
             row_item = response.meta['item']
             row_item[dct['meta_item']['article']] = [response.text]
             row_item[dct['meta_item']['id']] = [uuid.uuid4().hex]
+
+            # item_value是item的常数项
             for name in self.item_value:
                 row_item[name] = getattr(self, name)
+
             for name in response.meta['cln']:
                 row_item[name] =response.meta['cln'][name]
         yield row_item
@@ -52,6 +89,7 @@ class BaseSpider(spiders.Spider):
         next_page_request = response.request
         next_page_url = self._get_next_page_url(response)
         if next_page_url:
+            # url 与 回调函数 抛出请求
             next_page_request.url = next_page_url
             next_page_request.callback = getattr(self, self._get_caller_func_name())
             yield next_page_request
@@ -87,6 +125,7 @@ class BaseSpider(spiders.Spider):
         elif url.startswith('./'):
             return response.url + url
 
+
     def _get_url_by_increase_num(self, url):
         """
         demand:
@@ -111,4 +150,3 @@ class BaseSpider(spiders.Spider):
     @classmethod
     def _get_caller_func_name(cls):
         return traceback.extract_stack()[-3][2]
-
