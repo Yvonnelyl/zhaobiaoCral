@@ -1,0 +1,138 @@
+{
+    "name": "sichuanZhaobiaocral",
+    "main_url": "http://www.ccgp-sichuan.gov.cn",
+
+    "item_value": ["fwebsite", "fregion"],
+        "fwebsite": ["四川政府采购网"],
+        "fregion": ["四川"],
+
+    "nextpage_url_num_search_re": "http://www.basechem.org/search\\?q=.+?&page=(.+)",
+
+    "start_url": "http://www.ccgp-sichuan.gov.cn/CmsNewsController.do?method=search&years=2018&chnlNames={types}&chnlCodes={code}&title=&tenderno=&agentname=&buyername=&startTime={self.start_time}&endTime={self.end_time}&distin_like=510000&province=510000&city=&town=&provinceText=\u56DB\u5DDD\u7701&cityText=\u8BF7\u9009\u62E9&townText=\u8BF7\u9009\u62E9&pageSize=10&curPage=1&searchResultForm=search_result_anhui.ftl",
+        "param": [
+        {
+            "types": "邀请招标采购公告",
+            "code": "8a817ecb39b9902a0139b9a22bc00b47",
+            "meta": {
+                "zhaobiao_type": "邀请招标"
+            }
+        },
+        {
+            "types": "邀请招标采购公告",
+            "code": "8a817ecb39d832560139d85a2ea70b06",
+            "meta": {
+                "zhaobiao_type": "邀请招标"
+            }
+        },
+        {
+            "types": "竞争性谈判采购公告",
+            "code": "8a817ecb39b9902a0139b9a541e90b4f",
+            "meta": {
+                "zhaobiao_type": "竞争性谈判"
+            }
+        },
+        {
+            "types": "竞争性谈判采购公告",
+            "code": "8a817ecb39d832560139d85b10ca0b0a",
+            "meta": {
+                "zhaobiao_type": "竞争性谈判"
+            }
+        },
+        {
+            "types": "公开招标采购公告",
+            "code": "8a817ecb39b9902a0139b9a2dfaf0b4b",
+            "meta": {
+                "zhaobiao_type": "公开招标"
+            }
+        },
+        {
+            "types": "公开招标采购公告",
+            "code": "8a817ecb39d832560139d858abff0afe",
+            "meta": {
+                "zhaobiao_type": "公开招标"
+            }
+        },
+        {
+            "types": "竞争性磋商采购公告",
+            "code": "402886875355b06e01539d135c5a3b0e",
+            "meta": {
+                "zhaobiao_type": "竞争性磋商"
+            }
+        },
+        {
+            "types": "竞争性磋商采购公告",
+            "code": "402886875355b06e01539dde85093fb9",
+            "meta": {
+                "zhaobiao_type": "竞争性磋商"
+            }
+        },
+        {
+            "types": "询价采购公告",
+            "code": "8a817ecb39b9902a0139b9a5d8ea0b53",
+            "meta": {
+                "zhaobiao_type": "询价采购公告"
+            }
+        },
+        {
+            "types": "询价采购公告",
+            "code": "8a817ecb39d832560139d85973c30b02",
+            "meta": {
+                "zhaobiao_type": "询价采购公告"
+            }
+        },
+        {
+            "types": "单一来源采购公告",
+            "code": "8a817ecb39b9902a0139b9a72aed0b57",
+            "meta": {
+                "zhaobiao_type": "单一来源采购公告"
+            }
+        },
+        {
+            "types": "单一来源采购公告",
+            "code": "8a817ecb39d832560139d85806a70afa",
+            "meta": {
+                "zhaobiao_type": "单一来源采购公告"
+            }
+        }
+    ],
+        "start_time": "2019-01-23",
+        "end_time": "2019-01-24",
+
+    "func": {
+        "parse": {
+            "parse_list": {
+                "table_row": {
+                    "method": "xpath",
+                    "path": "//div[@class='info']/ul/li"
+                },
+                "item_loader": {
+                    "ftime": [
+                        "add_xpath",
+                        "concat(./div[@class='time curr']/text()[2],'-',./div[@class='time curr']/span/text())"
+                    ],
+                    "furl": [
+                        "add_xpath",
+                        "./a/@href"
+                    ],
+                    "ftitle": [
+                        "add_xpath",
+                        "./a/div[@class='title']/text()"
+                    ]
+                },
+                "yield": {
+                    "reuquest": {
+                        "callback": "parse_detail"
+                    }
+                }
+            }
+        },
+        "parse_detail": {
+            "parse_article": {
+                "meta_item": {
+                    "id": "farticleid",
+                    "article": "farticle"
+                }
+            }
+        }
+    }
+}
