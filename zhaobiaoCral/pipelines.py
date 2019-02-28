@@ -2,7 +2,7 @@
 from twisted.enterprise import adbapi
 import json
 import scrapy
-from scrapy.pipelines.images import ImagesPipeline
+from scrapy.pipelines.files import FilesPipeline
 from scrapy.exceptions import DropItem
 import re
 # Define your item pipelines here
@@ -16,37 +16,54 @@ class OracleAsyncPipeline(object):
     """
     oracle异步写入的通道
     """
+    def __init__(self, conn_dct):
+        self.dbpool = adbapi.ConnectionPool('cx_Oracle', **conn_dct)
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(
+            conn_dct=crawler.settings.get('ORACLE_CONN')
+        )
+
     def open_spider(self, spider):
         """爬虫运行后的数据库连接"""
-        conn_dct = {
-            "dsn": "200.100.100.69/dgr",
-            "user":"hiibase",
-            "password":"hiibase"
-        }
-        self.insert_sqls = [sql for sql in self.get_insert_sql()]
-        self.dbpool = adbapi.ConnectionPool('cx_Oracle', **conn_dct)
+        self.tablename_n_sql_list = [tablename_n_sql for tablename_n_sql in self.get_insert_sql()]
 
     def process_item(self, item, spider):
         self.dbpool.runInteraction(self.insert_db, item)
         return item
 
     def close_spider(self, spider):
-        self.dbpool.close()
+        pass
 
     def insert_db(self, tx, item):
-        for insert_sql in self.insert_sqls:
-            table_name = insert_sql[0]
-            sql = insert_sql[1]
-            clns = [cln for cln in self.insert_table[table_name]]
+        for tablename_n_sql in self.tablename_n_sql_list:
+            # 获取表名与insert—sql
+            table_name = tablename_n_sql[0]
+            sql = tablename_n_sql[1]
+            columns = self.get_columns(table_name)
             try:
-                values = [item[cln][0] for cln in clns]
+                # 提取出item中的准备插入该表的值
+                values = [item[cln][0] for cln in columns]
             except KeyError:
                 continue
             tx.execute(sql, tuple(values))
 
+    def get_columns(self, table_name):
+        """
+        获取table的列
+        """
+        return [cln for cln in self.insert_table[table_name]]
+
     def get_insert_sql(self):
+        """
+        根据
+        :return:
+        """
+
         conf = self.get_cral_conf()
         self.insert_table = conf["dct"]["table"]
+
         for table_nm in self.insert_table:
             cln = ','.join(self.insert_table[table_nm])
             value_format = ','.join([':' + str(num) for num in range(1, len(self.insert_table[table_nm]) + 1)])
@@ -58,7 +75,7 @@ class OracleAsyncPipeline(object):
             return json.loads(f.read())
 
 
-class MyFilesPipeline(ImagesPipeline):
+class ZhaoBiaoFilesPipeline(FilesPipeline):
 
     def get_media_requests(self, item, info):
         for image_url in item['image_urls']:

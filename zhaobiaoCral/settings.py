@@ -15,8 +15,6 @@ SPIDER_MODULES = ['zhaobiaoCral.spiders']
 NEWSPIDER_MODULE = 'zhaobiaoCral.spiders'
 IMAGES_STORE = './zhaobiaoImg'
 
-LOG_FILE = "mySpider.log"
-
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'zhaobiaoCral (+http://www.yourdomain.com)'
 
@@ -90,3 +88,15 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+#Self define param
+ORACLE_CONN = {
+   "dsn": "200.100.100.69/dgr",
+   "user": "hiibase",
+   "password": "hiibase"
+}
+
+REDIS_CONN  = {
+   "redis_conf": {"host": "localhost", "port": 6379},
+   "queue_name": "zbcral"
+}

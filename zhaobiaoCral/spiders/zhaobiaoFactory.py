@@ -1,7 +1,8 @@
 import json
 import redis
 from .zhaobiaoBaseSpider import BaseSpider
-
+import datetime
+import logging
 
 
 class _zhaobiaoSpiderCreator():
@@ -17,6 +18,21 @@ class _zhaobiaoSpiderCreator():
             cral_conf_dct.update(
                 {func_name: cls.get_wanted_func(func_name)}
             )
+
+        # LOG CONF
+        to_day = datetime.datetime.now()
+        log_file_path = "log/{}_{}_{}_{}".format(cral_conf_dct['name'], to_day.year, to_day.month, to_day.day)
+
+        custom_settings = {
+            # 设置管道下载
+            # 'ITEM_PIPELINES': {
+            #     'autospider.pipelines.DcdAppPipeline': 300,
+            # },
+            # 设置log日志
+            'LOG_LEVEL': 'WARNING',
+            'LOG_FILE': log_file_path
+        }
+        cral_conf_dct.update(custom_settings)
 
         # 返回爬虫类
         return type(cral_conf_dct['name'], (BaseSpider,), cral_conf_dct)
@@ -68,12 +84,29 @@ class _GetCralConf():
             return json.loads(json_)
 
     def redis(self):
+        """
+        从
+        :return:
+        """
         r = redis.StrictRedis(**self.redis_conf)
-        return r.brpop(self.queue_name)
+        # 弹出爬虫名
+        cral_name = r.rpop(self.queue_name)
+        try:
+            # 弹出爬虫conf json
+            cral_json = r.rpop(cral_name)
+        except:
+            today = datetime.datetime.now()
+            log_time = "  {}_{}_{}".format(today.year, today.month, today.day)
+            error_info = 'redis  lost  json  cral_name:  ' + cral_name[1] + log_time
+            with open("log/run_log", "a") as f:
+                f.write(error_info)
+            raise Exception(error_info)
 
+        cral_dct = json.loads(cral_json)
+        return cral_dct
+
+from ..settings import REDIS_CONN
 
 # create new spider
 FleshSpider = _zhaobiaoSpiderCreator(
-    "redis",
-    redis_conf={"host": "localhost", "port": 6379},
-    queue_name="zbcral")
+    "redis", **REDIS_CONN)

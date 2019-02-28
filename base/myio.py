@@ -1,5 +1,6 @@
 import os
 import uuid
+import json
 
 
 def check_dir(path):
@@ -42,3 +43,18 @@ def remove_file(path):
 
 def  guid():
     return uuid.uuid4().hex
+
+
+def json_to_dict(json_path):
+    with open(json_path, 'rb') as f:
+        conf_dict = json.loads(f.read())
+    return conf_dict
+
+
+def get_dir_son_file(file_dir):
+    for _, _, files in os.walk(file_dir):
+        return files  # 当前路径下所有非目录子文件
+
+
+def get_file_dir(file):
+    return os.path.dirname(os.path.realpath(file))
