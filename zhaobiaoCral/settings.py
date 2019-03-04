@@ -96,7 +96,7 @@ ORACLE_CONN = {
    "password": "hiibase"
 }
 
-REDIS_CONN  = {
-   "redis_conf": {"host": "localhost", "port": 6379},
+REDIS_CONF  = {
+   "redis_conn": {"host": "localhost", "port": 6379},
    "queue_name": "zbcral"
 }

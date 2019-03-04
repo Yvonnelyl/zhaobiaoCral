@@ -32,6 +32,12 @@ def _load_item_info():
             yield item_param
 
 
+class FileItem(scrapy.Item):
+    file_urls = scrapy.Field()
+    files = scrapy.Field()
+    file_path = scrapy.Field()
+
+
 for item_dct in _load_item_info():
     for name in item_dct:
         # 构建包含Field的字典

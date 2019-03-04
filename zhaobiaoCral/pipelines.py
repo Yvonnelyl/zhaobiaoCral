@@ -4,6 +4,7 @@ import json
 import scrapy
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.exceptions import DropItem
+from .items import FileItem
 import re
 # Define your item pipelines here
 #
@@ -11,8 +12,32 @@ import re
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 
+class PreExtractPipeline():
+    """
+    预处理管道，把招标文件预处理出正文
+    """
+    def process_item(self, item, spider):
+        if isinstance():
 
-class OracleAsyncPipeline(object):
+            fi = FileItem()
+
+
+    def close_spider(self, spider):
+
+
+class Text2VectorPipeline():
+    """
+    把文件分类成词向量，并作处理
+    """
+
+
+class ExtractKeywordPipeline():
+    """
+    把关键词提取出来
+    """
+
+
+class OracleAsyncPipeline():
     """
     oracle异步写入的通道
     """
@@ -34,7 +59,7 @@ class OracleAsyncPipeline(object):
         return item
 
     def close_spider(self, spider):
-        pass
+        self.dbpool.close()
 
     def insert_db(self, tx, item):
         for tablename_n_sql in self.tablename_n_sql_list:
@@ -71,30 +96,43 @@ class OracleAsyncPipeline(object):
             yield (table_nm, sql)
 
     def get_cral_conf(self):
-        with open(r'C:\Users\Admin\PycharmProjects\scrapyProjects\zhaobiaoCral\test.json', 'rb') as f:
+        with open(r'C:\Users\Admin\PycharmProjects\scrapyProjects\zhaobiaoCral\item.json', 'rb') as f:
             return json.loads(f.read())
 
 
 class ZhaoBiaoFilesPipeline(FilesPipeline):
 
     def get_media_requests(self, item, info):
-        for image_url in item['image_urls']:
-            yield scrapy.Request(image_url)
+        if isinstance(item, FileItem):
+            for file_url in item['file_urls']:
+                yield scrapy.Request(file_url)
+        else:
+            return item
 
     def item_completed(self, results, item, info):
-        image_paths = [x['path'] for ok, x in results if ok]
-        if not image_paths:
-            raise DropItem("Item contains no images")
-        item['image_paths'] = image_paths
+        """
+        Here’s a typical value of the results argument:
+
+                [(True,
+                  {'checksum': '2b00042f7481c7b056c4b410d28f33cf',
+                   'path': 'full/0a79c461a4062ac383dc4fade7bc09f1384a3910.jpg',
+                   'url': 'http://www.example.com/files/product1.pdf'}),
+                 (False,
+                  Failure(...))]
+        """
+        file_paths = [x['path'] for ok, x in results if ok]
+        if not file_paths:
+            raise DropItem("Item contains no files")
+        item['file_paths'] = file_paths
         return item
 
     def file_path(self, request, response=None, info=None):
         # 接收上面meta传递过来的图片名称
         name = request.meta['name']
         # 提取url前面名称作为图片名
-        image_name = request.url.split('/')[-1]
+        file_name = request.url.split('/')[-1]
         # 清洗Windows系统的文件夹非法字符，避免无法创建目录
         folder_strip = re.sub(r'[?\\*|“<>:/]', '', str(name))
         # 分文件夹存储的关键：{0}对应着name；{1}对应着image_guid
-        filename = u'{0}/{1}'.format(folder_strip, image_name)
+        filename = u'{0}/{1}'.format(folder_strip, file_name)
         return filename

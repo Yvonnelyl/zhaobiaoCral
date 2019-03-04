@@ -105,8 +105,8 @@ class _GetCralConf():
         cral_dct = json.loads(cral_json)
         return cral_dct
 
-from ..settings import REDIS_CONN
+from ..settings import REDIS_CONF
 
 # create new spider
 FleshSpider = _zhaobiaoSpiderCreator(
-    "redis", **REDIS_CONN)
+    "redis", **REDIS_CONF)
