@@ -29,4 +29,4 @@ def send_mail(subject, content):
 
 if __name__ == '__main__':
     for i in range(5):
-        send_mail('猪猪','猪猪呜唔晤嗯地数数：'+ str(i))
+        send_mail('猪猪','猪猪呜唔晤嗯：'+ str(i))
