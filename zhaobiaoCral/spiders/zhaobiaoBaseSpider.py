@@ -8,6 +8,7 @@ from scrapy.loader import ItemLoader
 import uuid
 import re
 import traceback
+from scrapy.linkextractor import LinkExtractor
 
 
 class BaseSpider(spiders.Spider):
@@ -34,7 +35,7 @@ class BaseSpider(spiders.Spider):
         for row in table:
 
             if 'item_loader' in dct:
-                row_item = self.__load_item(dct['item_loader'], selector=row)
+                row_item = self.__item_loader(dct['item_loader'], selector=row)
                 # 传给下一个函数
                 response.meta.update({'item': row_item})
 
@@ -42,13 +43,71 @@ class BaseSpider(spiders.Spider):
                     yield from \
                         self.__yield_request(row_item['furl'], dct['yield'], response)
 
-    def __load_item(self,dct, selector=None, response=None):
+    def parse_article(self, dct, response):
+        # 生成uuid
+        article_id = uuid.uuid4().hex
+        # 保存html
+        yield from self.__save_html(response, article_id)
+        #  正文的提取
+        if "text" in dct:
+            yield from self.__get_text(dct, response)
+        # 文件的提取
+        if "file" in dct:
+            yield from self.__get_file(dct, response)
+
+    def next_page(self, response):
+        next_page_request = response.request
+        next_page_url = self._get_next_page_url(response)
+        if next_page_url:
+            # url 与 回调函数 抛出请求
+            next_page_request.url = next_page_url
+            next_page_request.callback = getattr(self, self._get_caller_func_name())
+            yield next_page_request
+
+    def __get_file(self, dct, response):
+        """扔出文件请求包给pipeline处理"""
+        d = dct["file"]
+
+        link = LinkExtractor(restrict_xpaths=d["xpath"])
+        links = link.extract_links(response)
+
+        file_item = items.FileItem()
+        file_item['file_urls'] = [link.url for link in links]
+
+        yield file_item
+
+    def __get_text(self, dct, response):
+        d = dct["text"]
+
+        text_item = items.TextItem()
+        selectors = response.xpath(d["xpath"])
+        text_item["fartcle"] = selectors.get()
+        text_item["text"] = selectors.xpath('string(.)')
+
+        yield text_item
+
+    def __save_html(self, response, article_id):
+        html_item = response.meta['item']
+        html_item["fhtml"] = [response.text]
+        html_item["farticleid"] = [article_id]
+
+        # item_value是item的常数项，加上常数项
+        for name in self.item_value:
+            html_item[name] = getattr(self, name)
+
+        # meta 传递值
+        for name in response.meta['cln']:
+            html_item[name] =response.meta['cln'][name]
+        yield html_item
+
+    def __item_loader(self, item_name,dct, selector=None, response=None):
         """
         :param dct:  item_name and  xpath
         :param selector:  提取目标
         :param response: 提取目标
         """
-        row_item_loader = ItemLoader(item=items.OriginItem(),
+        item = getattr(items, item_name)
+        row_item_loader = ItemLoader(item=item(),
                                      response=response, selector=selector)
         for name, param in dct.items():
             method = param[0]
@@ -69,30 +128,6 @@ class BaseSpider(spiders.Spider):
                 meta=response.meta,
                 callback=getattr(self, dct_yield['reuquest']['callback'])
             )
-
-    def parse_article(self, dct, response):
-        #
-        if 'meta_item' in dct:
-            row_item = response.meta['item']
-            row_item[dct['meta_item']['article']] = [response.text]
-            row_item[dct['meta_item']['id']] = [uuid.uuid4().hex]
-
-            # item_value是item的常数项
-            for name in self.item_value:
-                row_item[name] = getattr(self, name)
-
-            for name in response.meta['cln']:
-                row_item[name] =response.meta['cln'][name]
-        yield row_item
-
-    def next_page(self, response):
-        next_page_request = response.request
-        next_page_url = self._get_next_page_url(response)
-        if next_page_url:
-            # url 与 回调函数 抛出请求
-            next_page_request.url = next_page_url
-            next_page_request.callback = getattr(self, self._get_caller_func_name())
-            yield next_page_request
 
     def _get_next_page_url(self, response):
         """
@@ -124,7 +159,6 @@ class BaseSpider(spiders.Spider):
             return self.main_url + url
         elif url.startswith('./'):
             return response.url + url
-
 
     def _get_url_by_increase_num(self, url):
         """

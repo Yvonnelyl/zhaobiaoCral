@@ -51,7 +51,7 @@ class ZhaobiaocralExample(BaseSpider):
     def parse(self, response):
         table = response.xpath('//div[@class="info"]/ul/li')
         for row in table:
-            row_item_loader = ItemLoader(item=items.OriginItem(), selector=row)
+            row_item_loader = ItemLoader(item=items.__OriginItem(), selector=row)
             row_item_loader.add_xpath('ftime',
                                       'concat(./div[@class="time curr"]/text()[2],"-",./div[@class="time curr"]/span/text())')
             row_item_loader.add_xpath('furl', './a/@href')

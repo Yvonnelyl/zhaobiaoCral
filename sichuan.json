@@ -128,9 +128,11 @@
         },
         "parse_detail": {
             "parse_article": {
-                "meta_item": {
-                    "id": "farticleid",
-                    "article": "farticle"
+                "text": {
+                    "xpath": "//div[@class='cont-info']"
+                },
+                "file": {
+                    "xpath": "//div[@class='tableBox']"
                 }
             }
         }

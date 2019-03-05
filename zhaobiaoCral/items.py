@@ -32,10 +32,27 @@ def _load_item_info():
             yield item_param
 
 
-class FileItem(scrapy.Item):
-    file_urls = scrapy.Field()
-    files = scrapy.Field()
-    file_path = scrapy.Field()
+class __OriginItem(scrapy.Item):
+    fudtime = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
+    fisuse = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
+
+
+class FileItem(__OriginItem):
+    farticleid = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
+    file_urls = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
+    fpath = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
+
+
+class HtmlItem(__OriginItem):
+    farticleid = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
+    farticlehtml = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
+
+
+class TextItem(__OriginItem):
+    farticleid = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
+    fxpath = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
+    fartcle = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
+    ftext = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
 
 
 for item_dct in _load_item_info():
@@ -45,6 +62,6 @@ for item_dct in _load_item_info():
             [(name, scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))) for name in item_dct[name]]
         )
         #  创建 item类
-        vars()[name] = type(name, (scrapy.Item,), _d)
+        vars()[name] = type(name, (__OriginItem,), _d)
 
 

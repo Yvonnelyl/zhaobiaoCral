@@ -1,28 +1,13 @@
 # -*- coding: utf-8 -*-
 from twisted.enterprise import adbapi
-import json
-import scrapy
 from scrapy.pipelines.files import FilesPipeline
 from scrapy.exceptions import DropItem
-from .items import FileItem
+from .items import *
 import re
 # Define your item pipelines here
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-
-
-class PreExtractPipeline():
-    """
-    预处理管道，把招标文件预处理出正文
-    """
-    def process_item(self, item, spider):
-        if isinstance():
-
-            fi = FileItem()
-
-
-    def close_spider(self, spider):
 
 
 class Text2VectorPipeline():

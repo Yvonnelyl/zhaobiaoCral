@@ -1,7 +1,7 @@
 {
     "engine_info": "oracle+cx_oracle://hiibase:hiibase@200.100.100.69:1521/dgr",
     "table":{
-        "zhaobiaoarticleInfo": [
+        "ListItem": [
             "ftitle",
             "farticleid",
             "fwebsite",
@@ -9,12 +9,9 @@
             "fregion",
             "ftime"
         ],
-        "zhaobiaoarticle": [
+        "KeywordItem": [
             "farticleid",
-            "farticle"
+            ""
         ]
-    },
-    "item": {
-        "OriginItem": ["ftitle","farticleid", "fwebsite", "furl", "fregion" ,"ftime", "farticle", "zhaobiao_type"]
     }
 }
