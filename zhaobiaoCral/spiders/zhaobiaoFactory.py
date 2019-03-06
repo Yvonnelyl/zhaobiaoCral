@@ -2,43 +2,36 @@ import json
 import redis
 from .zhaobiaoBaseSpider import BaseSpider
 import datetime
-import logging
+from datetime import date, timedelta
 
 
 class _zhaobiaoSpiderCreator():
     """
     招标爬虫生成器，当用cmdline运行scrapy爬虫的时候必定会用此类生成爬虫
     """
+    cral_conf_dct = {}
     def __new__(cls, create_type, redis_conf=None, queue_name=None):
         # 获得cral conf json
         get_cral_conf = _GetCralConf(create_type, redis_conf=None, queue_name=None)
-        cral_conf_dct = get_cral_conf.get()
-        # 把所有的函数放入字典中
-        for func_name in cral_conf_dct['func']:
-            cral_conf_dct.update(
-                {func_name: cls.get_wanted_func(func_name)}
-            )
+        cls.cral_conf_dct = get_cral_conf.get()
 
-        # LOG CONF
-        to_day = datetime.datetime.now()
-        log_file_path = "log/{}_{}_{}_{}".format(cral_conf_dct['name'], to_day.year, to_day.month, to_day.day)
-
-        custom_settings = {
-            # 设置管道下载
-            # 'ITEM_PIPELINES': {
-            #     'autospider.pipelines.DcdAppPipeline': 300,
-            # },
-            # 设置log日志
-            'LOG_LEVEL': 'WARNING',
-            'LOG_FILE': log_file_path
-        }
-        cral_conf_dct.update(custom_settings)
+        cls.__add_func()
+        cls.__add_log_conf()
+        cls.__add_time()
 
         # 返回爬虫类
-        return type(cral_conf_dct['name'], (BaseSpider,), cral_conf_dct)
+        return type(cls.cral_conf_dct['name'], (BaseSpider,), cls.cral_conf_dct)
 
     @classmethod
-    def get_wanted_func(cls, func_name):
+    def __add_func(cls):
+        # 把所有的函数放入字典中
+        for func_name in cls.cral_conf_dct['func']:
+            cls.cral_conf_dct.update(
+                {func_name: cls.__get_wanted_func(func_name)}
+            )
+
+    @classmethod
+    def __get_wanted_func(cls, func_name):
         """
         获取想要的函数
         :param func_name:  函数名
@@ -56,6 +49,32 @@ class _zhaobiaoSpiderCreator():
         tmp.__name__ = func_name
         return tmp
 
+    @classmethod
+    def __add_log_conf(cls):
+        # LOG CONF
+        to_day = datetime.datetime.now()
+        log_file_path = "log/{}_{}_{}_{}".format(cls.cral_conf_dct['name'], to_day.year, to_day.month, to_day.day)
+
+        custom_settings = {
+            # 设置管道下载
+            # 'ITEM_PIPELINES': {
+            #     'autospider.pipelines.DcdAppPipeline': 300,
+            # },
+            # 设置log日志
+            'LOG_LEVEL': 'WARNING',
+            'LOG_FILE': log_file_path
+        }
+        cls.cral_conf_dct.update(custom_settings)
+
+    @classmethod
+    def __add_time(cls):
+        date_format = cls.cral_conf_dct["date_format"]
+        period = cls.cral_conf_dct["period"]
+        # 添加start end date
+        cls.cral_conf_dct["end_time"] = (
+                date.today() - timedelta(1)).strftime(date_format)
+        cls.cral_conf_dct["start_time"]  = (
+                date.today() - timedelta(period)).strftime(date_format)
 
 class _GetCralConf():
     """

@@ -95,8 +95,11 @@
             }
         }
     ],
-        "start_time": "2019-01-23",
-        "end_time": "2019-01-24",
+
+        "start_time": "",
+        "end_time": "",
+        "date_format": "%Y-%m-%d",
+        "period": "1",
 
     "func": {
         "parse": {

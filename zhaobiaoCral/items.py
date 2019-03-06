@@ -31,37 +31,38 @@ def _load_item_info():
         for item_name, item_param in item_dict.items():
             yield item_param
 
+def oracle_field():
+    return scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
+
 
 class __OriginItem(scrapy.Item):
-    fudtime = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
-    fisuse = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
+    fudtime = oracle_field()
+    fisuse = oracle_field()
 
 
 class FileItem(__OriginItem):
-    farticleid = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
-    file_urls = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
-    fpath = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
+    farticleid = oracle_field()
+    file_urls = oracle_field()
+    fpath = oracle_field()
 
 
 class HtmlItem(__OriginItem):
-    farticleid = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
-    farticlehtml = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
+    farticleid = oracle_field()
+    farticlehtml = oracle_field()
 
 
 class TextItem(__OriginItem):
-    farticleid = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
-    fxpath = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
-    fartcle = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
-    ftext = scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))
+    farticleid = oracle_field()
+    fxpath = oracle_field()
+    fartcle = oracle_field()
+    ftext = oracle_field()
 
 
 for item_dct in _load_item_info():
     for name in item_dct:
         # 构建包含Field的字典
         _d = dict(
-            [(name, scrapy.Field(input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr))) for name in item_dct[name]]
+            [(name, oracle_field()) for name in item_dct[name]]
         )
         #  创建 item类
         vars()[name] = type(name, (__OriginItem,), _d)
-
-
