@@ -35,30 +35,6 @@ class  Schedule():
         while True:
             self.schedule.run_pending()
 
-    # def set_data_process_schedule(self):
-    #     """
-    #     三个数据处理操作设置定时任务
-    #     :return:
-    #     """
-    #     conf_path = 'conf.json'
-    #     run_project = Run(conf_path)
-    #     tmp = self.schedule_dict['push']
-    #     getattr(self.schedule.every(), tmp['period'][1]).at(tmp['at']).do(run_project.run_push)
-
-    # def _get_spider_func_dict(self):
-    #     """
-    #     :return: 爬虫函数字典
-    #     """
-    #     self_path = get_file_dir(__file__)
-    #     spider_path = self_path + '\spider'
-    #     spider_pyfile_list = get_dir_son_file(spider_path)
-    #     # 加入run spider函数
-    #     for pyfile in spider_pyfile_list:
-    #         self.run_spider_func_dict_param[pyfile.replace('.py', '')] = \
-    #             'python ' + spider_path + '\\' + pyfile
-
-    # 设定爬虫任务时间
-
     def __set_spider_schedule(self):
         """
         :param run_spider_func:  爬虫运行函数字典集合
@@ -75,22 +51,13 @@ class  Schedule():
                 self.unit = spider_schedule['period'][1]
                 self.period = spider_schedule['period'][0]
 
-        for spider_name in self.schedule_dict():
+        for spider_name in self.schedule_dict:
             # dict to object
             beam = _SpiderScheduleBeam(self.schedule_dict[spider_name])
             # 开始设定每个爬虫的计划
             getattr(self.schedule.every(), beam.unit).at(beam.at).do(
                 # spider_name, r, queue
                 self.r.lpush, self.queque_name, spider_name)
-
-    # def __job_creator(self):
-    #     #loop抛出job
-    #     for spider_name in self.schedule_dict:
-    #
-    #         def job(spider_name, r, queue):
-    #             r.lpush(queue, spider_name)
-    #
-    #         yield spider_name, job
 
 
 if __name__ == '__main__':

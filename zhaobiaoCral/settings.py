@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import  os
 # Scrapy settings for zhaobiaoCral project
 #
 # For simplicity, this file contains only settings considered important or
@@ -13,7 +13,7 @@ BOT_NAME = 'zhaobiaoCral'
 
 SPIDER_MODULES = ['zhaobiaoCral.spiders']
 NEWSPIDER_MODULE = 'zhaobiaoCral.spiders'
-IMAGES_STORE = './zhaobiaoImg'
+# IMAGES_STORE = './zhaobiaoImg'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'zhaobiaoCral (+http://www.yourdomain.com)'
@@ -52,9 +52,9 @@ DOWNLOAD_DELAY = 0.3
 
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
-DOWNLOADER_MIDDLEWARES = {
-   'zhaobiaoCral.middlewares.AntiImgAntiDownloadMiddleware': 543,
-}
+# DOWNLOADER_MIDDLEWARES = {
+#    'zhaobiaoCral.middlewares.AntiImgAntiDownloadMiddleware': 543,
+# }
 
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html
@@ -65,9 +65,21 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'zhaobiaoCral.pipelines.MysqlAsyncPipeline': 300,
+    # 'zhaobiaoCral.pipelines.ArticleImagesPipeline':1,
+    'zhaobiaoCral.pipelines.ZBFilesPipeline': 250,
+    # 'scrapy.pipelines.files.FilesPipeline': 1,
+    'zhaobiaoCral.pipelines.OracleAsyncPipeline': 100,
+    'zhaobiaoCral.pipelines.FileInfoPipeline': 500,
+
 }
 
+project_dir = os.path.abspath(os.path.dirname(__file__))
+# 保存路径
+FILES_STORE = os.path.join(project_dir, "DownLoadFile")
+FILES_URLS_FIELD = 'file_urls'
+
+# 文件存储路径
+FILES_EXPIRES = 90
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
@@ -90,6 +102,13 @@ ITEM_PIPELINES = {
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 #Self define param
+ITEM_TABLE = {
+    "FileItem": "FileItem",
+    "TextItem": "TextItem",
+    "ListItem": "ListItem",
+    "KeywordItem": "KeywordItem"
+}
+
 ORACLE_CONN = {
    "dsn": "200.100.100.69/dgr",
    "user": "hiibase",
@@ -97,6 +116,27 @@ ORACLE_CONN = {
 }
 
 REDIS_CONF  = {
-   "redis_conn": {"host": "localhost", "port": 6379},
+   "redis_conf": {"host": "localhost", "port": 6379},
    "queue_name": "zbcral"
 }
+
+CREATE_ITEM = {
+    "ListItem": [
+        "ftitle",
+        "fwebsite",
+        "furl",
+        "fregion",
+        "ftime",
+        "zhaobiao_type" #
+    ],
+    "KeywordItem": [
+        "money",
+        "source_company"
+    ]
+}
+
+ENGINE_INFO = "oracle+cx_oracle://hiibase:hiibase@200.100.100.69:1521/dgr",
+
+
+
+

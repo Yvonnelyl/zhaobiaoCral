@@ -147,7 +147,6 @@ for i in range(len(data)):
     # each_fclist.append(qckg)
 
 # print(each_fc)
-data['分词'] = each_fclist
 print(data['分词'] )
 
 for i in range(len(each_fclist)):

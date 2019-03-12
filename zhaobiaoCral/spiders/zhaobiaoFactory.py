@@ -12,7 +12,7 @@ class _zhaobiaoSpiderCreator():
     cral_conf_dct = {}
     def __new__(cls, create_type, redis_conf=None, queue_name=None):
         # 获得cral conf json
-        get_cral_conf = _GetCralConf(create_type, redis_conf=None, queue_name=None)
+        get_cral_conf = _GetCralConf(create_type, redis_conf=redis_conf, queue_name=queue_name)
         cls.cral_conf_dct = get_cral_conf.get()
 
         cls.__add_func()
@@ -37,16 +37,19 @@ class _zhaobiaoSpiderCreator():
         :param func_name:  函数名
         :param dct:  函数参数
         """
+
         def tmp(self, response):
             for parse_name in self.func[func_name]:
                 # 获取功能型方法
                 f = getattr(self, parse_name)
+                d = {'caller_name': func_name}
                 # 有参数的方法，带上函数参数
                 if  self.func[func_name][parse_name] != {}:
-                    yield from f(self.func[func_name][parse_name], response)
+                    yield from f(self.func[func_name][parse_name], response, **d)
                 else: yield from f(response)
         #   函数名更换
         tmp.__name__ = func_name
+
         return tmp
 
     @classmethod
@@ -68,13 +71,21 @@ class _zhaobiaoSpiderCreator():
 
     @classmethod
     def __add_time(cls):
+        """
+        为爬虫配置dict加上时间属性
+        :return:
+        """
         date_format = cls.cral_conf_dct["date_format"]
-        period = cls.cral_conf_dct["period"]
-        # 添加start end date
-        cls.cral_conf_dct["end_time"] = (
-                date.today() - timedelta(1)).strftime(date_format)
-        cls.cral_conf_dct["start_time"]  = (
-                date.today() - timedelta(period)).strftime(date_format)
+        period_str = cls.cral_conf_dct["period"]
+        period = int(period_str) # 转成数字类型
+
+        if not ('start_time' in cls.cral_conf_dct and 'start_time' in cls.cral_conf_dct):
+            # 添加今日start end date
+            cls.cral_conf_dct["end_time"] = (
+                    date.today() - timedelta(1)).strftime(date_format)
+
+            cls.cral_conf_dct["start_time"]  = (
+                    date.today() - timedelta(period)).strftime(date_format)
 
 class _GetCralConf():
     """
@@ -109,14 +120,14 @@ class _GetCralConf():
         """
         r = redis.StrictRedis(**self.redis_conf)
         # 弹出爬虫名
-        cral_name = r.rpop(self.queue_name)
+        cral_name = r.rpop(self.queue_name).decode("utf-8")
         try:
             # 弹出爬虫conf json
-            cral_json = r.rpop(cral_name)
+            cral_json = r.get(cral_name)
         except:
             today = datetime.datetime.now()
             log_time = "  {}_{}_{}".format(today.year, today.month, today.day)
-            error_info = 'redis  lost  json  cral_name:  ' + cral_name[1] + log_time
+            error_info = 'redis  lost  json  cral_name:  ' + cral_name + log_time
             with open("log/run_log", "a") as f:
                 f.write(error_info)
             raise Exception(error_info)

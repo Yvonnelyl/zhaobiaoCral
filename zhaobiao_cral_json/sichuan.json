@@ -1,12 +1,10 @@
 {
-    "name": "sichuanZhaobiaocral",
+    "name": "sichuan",
     "main_url": "http://www.ccgp-sichuan.gov.cn",
 
     "item_value": ["fwebsite", "fregion"],
-        "fwebsite": ["四川政府采购网"],
-        "fregion": ["四川"],
-
-    "nextpage_url_num_search_re": "http://www.basechem.org/search\\?q=.+?&page=(.+)",
+        "fwebsite": "四川政府采购网",
+        "fregion": "四川",
 
     "start_url": "http://www.ccgp-sichuan.gov.cn/CmsNewsController.do?method=search&years=2018&chnlNames={types}&chnlCodes={code}&title=&tenderno=&agentname=&buyername=&startTime={self.start_time}&endTime={self.end_time}&distin_like=510000&province=510000&city=&town=&provinceText=\u56DB\u5DDD\u7701&cityText=\u8BF7\u9009\u62E9&townText=\u8BF7\u9009\u62E9&pageSize=10&curPage=1&searchResultForm=search_result_anhui.ftl",
         "param": [
@@ -96,8 +94,6 @@
         }
     ],
 
-        "start_time": "",
-        "end_time": "",
         "date_format": "%Y-%m-%d",
         "period": "1",
 
@@ -122,11 +118,12 @@
                         "./a/div[@class='title']/text()"
                     ]
                 },
-                "yield": {
-                    "reuquest": {
-                        "callback": "parse_detail"
-                    }
+                "request": {
+                    "callback": "parse_detail"
                 }
+            },
+            "next_page": {
+                  "url_num": "&curPage=([\d]+)"
             }
         },
         "parse_detail": {
@@ -136,6 +133,10 @@
                 },
                 "file": {
                     "xpath": "//div[@class='tableBox']"
+                },
+                "key_word": {
+                    "money": ["总金额(...)元", "预算金额(...)"],
+                    "source_company": ["采购代理机构名称(...)"]
                 }
             }
         }
