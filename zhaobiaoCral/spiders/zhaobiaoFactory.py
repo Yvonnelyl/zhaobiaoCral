@@ -3,6 +3,7 @@ import redis
 from .zhaobiaoBaseSpider import BaseSpider
 import datetime
 from datetime import date, timedelta
+from base.mydate import time_change_format
 
 
 class _zhaobiaoSpiderCreator():
@@ -75,17 +76,34 @@ class _zhaobiaoSpiderCreator():
         为爬虫配置dict加上时间属性
         :return:
         """
-        date_format = cls.cral_conf_dct["date_format"]
+        date_format = cls.cral_conf_dct["date_format"][0]
         period_str = cls.cral_conf_dct["period"]
         period = int(period_str) # 转成数字类型
 
-        if not ('start_time' in cls.cral_conf_dct and 'start_time' in cls.cral_conf_dct):
+        date_judge = 'start_time' in cls.cral_conf_dct and 'start_time' in cls.cral_conf_dct
+
+        if not date_judge:
             # 添加今日start end date
             cls.cral_conf_dct["end_time"] = (
                     date.today() - timedelta(1)).strftime(date_format)
 
             cls.cral_conf_dct["start_time"]  = (
                     date.today() - timedelta(period)).strftime(date_format)
+        # 建立不同格式的日期列表
+        date_format_list = cls.cral_conf_dct["date_format"]
+        start_times, end_times = [], []
+        for date_format in date_format_list:
+            if not date_judge:
+                start_times.append((date.today() - timedelta(1)).strftime(date_format))
+                end_times.append((date.today() - timedelta(period)).strftime(date_format))
+            else:
+                start_times.append(
+                    time_change_format(cls.cral_conf_dct["start_time"], "%Y-%m-%d", date_format))
+                end_times.append(
+                    time_change_format(cls.cral_conf_dct["end_time"], "%Y-%m-%d", date_format))
+        # 添加今日start end date
+        cls.cral_conf_dct["end_times"] = end_times
+        cls.cral_conf_dct["start_times"] = start_times
 
 class _GetCralConf():
     """

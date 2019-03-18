@@ -2,15 +2,15 @@ from datetime import datetime, date, timedelta
 import time
 
 
-def time_zw_to_en(zw_time):
+def time_change_format(zw_time, old_format, new_format):
     """
     把中文格式时间：xx年xx月xx日
     转成：xx-xx-xx
     :param zw_time: 中文格式时间
     :return:        英文格式时间
     """
-    t = time.strptime(zw_time, '%Y年%m月%d日')
-    en_time = time.strftime("%Y-%m-%d", t)
+    t = time.strptime(zw_time, old_format)
+    en_time = time.strftime(new_format, t)
     return en_time
 
 

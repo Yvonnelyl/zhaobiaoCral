@@ -1,94 +1,65 @@
 {
-    "name": "sichuanZhaobiaocral",
-    "main_url": "http://www.ccgp-sichuan.gov.cn",
-    "fwebsite": ["中国海南政府采购"],
-    "fregion": ["海南"],
+    "name": "hainan",
+    "main_url": "http://www.ccgp-hainan.gov.cn",
+
     "item_value": ["fwebsite", "fregion"],
-    "nextpage_xpath": "//li[@style='text-align:center;']/a[1]/@href",
-    "next_page_signal": "",
-    "nextpage_url_num_search_re": "http://www.basechem.org/search\\?q=.+?&page=(.+)",
-    "requests_mode": "POST",
-    "form_data": {
-        "begindate": "2019-02-01",
-        "enddate": "2019-02-15"
-    },
-    "start_url": "http://www.ccgp-hainan.gov.cn/cgw/cgw_list.jsp",
-    "param": [
-        {
-            "form_data": {
-                "title": "",
-                "bid_type": "101",
-                "zone": "",
-                "proj_number": ""
+        "fwebsite": "海南政府采购网",
+        "fregion": "海南",
+    "start_url": "http://www.ccgp-hainan.gov.cn/cgw/cgw_list.jsp?begindate={self.start_time}&currentPage=1&enddate={self.end_time}&title=&bid_type={zbtype}&proj_number=&zone=&ctype=",
+        "method": "post",
+        "param": [
+            {
+                "param": {
+                    "zbtype": 101
+                },
+                "meta": {
+                    "zhaobiao_type": "公开招标"
+                }
             },
-            "meta": {
-                "zhaobiao_type": "公开招标"
-            }
-        },
-        {
-            "form_data": {
-                "title": "",
-                "bid_type": "102",
-                "zone": "",
-                "proj_number": ""
+            {
+                "param": {
+                    "zbtype": 102
+                },
+                "meta": {
+                    "zhaobiao_type": "询价"
+                }
             },
-            "meta": {
-                "zhaobiao_type": "询价采购"
-            }
-        },
-        {
-            "form_data": {
-                "title": "",
-                "bid_type": "103",
-                "zone": "",
-                "proj_number": "",
-                "begindate": "",
-                "enddate": ""
+            {
+                "param": {
+                    "zbtype": 103
+                },
+                "meta": {
+                    "zhaobiao_type": "竞争性谈判"
+                }
             },
-            "meta": {
-                "zhaobiao_type": "竞争性谈判"
-            }
-        },
-        {
-            "form_data": {
-                "title": "",
-                "bid_type": "1031",
-                "zone": "",
-                "proj_number": "",
-                "begindate": "",
-                "enddate": ""
+            {
+                "param": {
+                    "zbtype": 104
+                },
+                "meta": {
+                    "zhaobiao_type": "竞争性磋商"
+                }
             },
-            "meta": {
-                "zhaobiao_type": "竞争性磋商"
-            }
-        },
-        {
-            "form_data": {
-                "title": "",
-                "bid_type": "104",
-                "zone": "",
-                "proj_number": "",
-                "begindate": "",
-                "enddate": ""
+            {
+                "param": {
+                    "zbtype": 105
+                },
+                "meta": {
+                    "zhaobiao_type": "单一来源"
+                }
             },
-            "meta": {
-                "zhaobiao_type": "单一来源采购"
+            {
+                "param": {
+                    "zbtype": 106
+                },
+                "meta": {
+                    "zhaobiao_type": "邀请招标"
+                }
             }
-        },
-        {
-            "form_data": {
-                "title": "",
-                "bid_type": "105",
-                "zone": "",
-                "proj_number": "",
-                "begindate": "",
-                "enddate": ""
-            },
-            "meta": {
-                "zhaobiao_type": "邀请招标"
-            }
-        }
-    ],
+        ],
+    "date_format": "%Y-%m-%d",
+    "period": "1",
+
     "func": {
         "parse": {
             "parse_list": {
@@ -99,7 +70,7 @@
                 "item_loader": {
                     "ftime": [
                         "add_xpath",
-                        "./em/i/text()"
+                        "./i/text()"
                     ],
                     "furl": [
                         "add_xpath",
@@ -108,20 +79,31 @@
                     "ftitle": [
                         "add_xpath",
                         "./em/a/text()"
+                    ],
+                    "zhaobiao_type": [
+                        "add_xpath",
+                        "./a/div[@class='title']/text()"
                     ]
                 },
-                "yield": {
-                    "reuquest": {
-                        "callback": "parse_detail"
-                    }
+                "request": {
+                    "callback": "parse_detail"
                 }
+            },
+            "next_page": {
+                  "url_num": "&curPage=([\d]+)"
             }
         },
         "parse_detail": {
             "parse_article": {
-                "meta_item": {
-                    "id": "farticleid",
-                    "article": "farticle"
+                "text": {
+                    "xpath": "//div[@class='nei03_02']"
+                },
+                "file":{
+                    "xpath": "//div[@id='con_TBAB_1']"
+                },
+                "key_word": {
+                    "money": ["预算金额：(...)元", "采购预算：(...)元", "预算金额（万元）(...)", "¥(.+?)）"],
+                    "source_company": ["采购代理机构名称(...)", "受(.+?)委托"]
                 }
             }
         }

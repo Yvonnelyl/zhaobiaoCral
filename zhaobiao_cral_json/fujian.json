@@ -1,0 +1,64 @@
+{
+    "name": "fujian",
+    "main_url": "http://www.fjggzyjy.cn",
+
+    "item_value": ["fwebsite", "fregion"],
+        "fwebsite": "福建政府采购网",
+        "fregion": "福建",
+
+    "start_url": "http://www.ccgp-hunan.gov.cn/mvc/getNoticeList4Web.do",
+        "param": [
+            {
+                "data": {
+                    "nType": "prcmNotices",
+                    "pType": "",
+                    "prcmPrjName": "",
+                    "prcmItemCode": "",
+                    "prcmOrgName": "",
+                    "startDate": "{self.start_time}",
+                    "endDate": "{self.end_time}",
+                    "prcmPlanNo": "",
+                    "page": "1",
+                    "pageSize": "18"
+                }
+            }
+    ],
+
+        "date_format": "%Y-%m-%d",
+        "period": "1",
+
+    "func": {
+        "parse": {
+            "parse_json": {
+
+            },
+            "parse_json": {
+
+            },
+            "next_page": {
+                  "data": "page"
+            }
+        },
+        "parse_detail": {
+            "parse_article": {
+                "text": {
+                    "xpath": "//boby"
+                },
+                "key_word": {
+                    "money": ["总金额(...)元", "预算金额(...)", "预算金额（元）(...)", "总金额（元）(...)"],
+                    "source_company": ["采购代理机构名称(...)"]
+                }
+            }
+        },
+        "parse_file": {
+            "parse_article": {
+                "parse_file": {
+                    "xpath": "//div[@class='relevant_notice'][1]"
+                }
+            }
+        }
+    }
+}
+
+-----
+article_url = http://www.ccgp-hunan.gov.cn/mvc/viewNoticeContent.do?noticeId=1000481994

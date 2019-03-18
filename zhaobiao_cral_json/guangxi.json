@@ -1,0 +1,111 @@
+{
+    "name": "guangxi",
+    "main_url": "http://www.gxzfcg.gov.cn",
+
+    "item_value": ["fwebsite", "fregion"],
+        "fwebsite": "广西政府采购网",
+        "fregion": "广西",
+
+    "start_url": "http://www.gxzfcg.gov.cn/CmsNewsController/search/chnlCodes-/distin-/beginDate-0/endDate-0/p-20/c-1/0-0.html",
+        "method": "post",
+        "param": [
+            {
+                "data": {
+                  "cmsNews.str3": "G-00",
+                  "cmsNews.startPubdate": "{self.start_date}",
+                  "cmsNews.endPubdate": "{self.end_date}"
+                },
+                "meta": {
+                  "zhaobiao_type": "公开招标"
+                }
+            },
+            {
+                "data":  {
+              "cmsNews.str3": "J-02",
+              "cmsNews.startPubdate": "{self.start_date}",
+              "cmsNews.endPubdate": "{self.end_date}"
+              },
+                "meta": {
+                  "zhaobiao_type": "邀请招标"
+                }
+            },
+            {
+                "data": {
+                  "cmsNews.str3": "X-04",
+                  "cmsNews.startPubdate": "{self.start_date}",
+                  "cmsNews.endPubdate": "{self.end_date}"
+                  },
+                "meta": {
+                  "zhaobiao_type": "竞争性谈判"
+                }
+            },
+            {
+                  "data":              {
+                  "cmsNews.str3": "D-03",
+                "cmsNews.startPubdate": "{self.start_date}",
+                "cmsNews.endPubdate": "{self.end_date}"
+                },
+                  "meta": {
+                    "zhaobiao_type": "单一来源"
+                  }
+              },
+            {
+                  "data":             {
+                "cmsNews.str3": "Y-01",
+                "cmsNews.startPubdate": "{self.start_date}",
+                "cmsNews.endPubdate": "{self.end_date}"
+              },
+                  "meta": {
+                    "zhaobiao_type": "询价"
+                  }
+              }
+        ],
+
+    "date_format": "%Y-%m-%d",
+    "period": "1",
+
+    "func": {
+        "parse": {
+            "parse_list": {
+                "table_row": {
+                    "method": "xpath",
+                    "path": "//div[@class='column infoLink noBox unitWidth_x6']/ul/li"
+                },
+                "item_loader": {
+                    "ftime": [
+                        "add_xpath",
+                        "./a/span[class='date']/text()"
+                    ],
+                    "furl": [
+                        "add_xpath",
+                        "./a/@href"
+                    ],
+                    "ftitle": [
+                        "add_xpath",
+                        "./a/@titile"
+                    ]
+                },
+                "request": {
+                    "callback": "parse_detail"
+                }
+            },
+            "next_page": {
+                  "url_num": "c-([\d]+)"
+            }
+        },
+        "parse_detail": {
+            "parse_article": {
+                "text": {
+                    "xpath": "//div[@class='column noBox']"
+                },
+                "file": {
+                    "xpath": "//div[@class='column noBox']"
+                },
+                "key_word": {
+                    "money": ["预算金额（万元）：(...)", "采购预算（人民币）：(...)。", "采购预算金额：(...)元", "¥(.+?)）"],
+                    "source_company": ["采购代理机构名称(...)", "受(.+?)委托"]
+                }
+            }
+        }
+    }
+}

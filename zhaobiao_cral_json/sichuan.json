@@ -68,28 +68,28 @@
             "types": "询价采购公告",
             "code": "8a817ecb39b9902a0139b9a5d8ea0b53",
             "meta": {
-                "zhaobiao_type": "询价采购公告"
+                "zhaobiao_type": "询价"
             }
         },
         {
             "types": "询价采购公告",
             "code": "8a817ecb39d832560139d85973c30b02",
             "meta": {
-                "zhaobiao_type": "询价采购公告"
+                "zhaobiao_type": "询价"
             }
         },
         {
             "types": "单一来源采购公告",
             "code": "8a817ecb39b9902a0139b9a72aed0b57",
             "meta": {
-                "zhaobiao_type": "单一来源采购公告"
+                "zhaobiao_type": "单一来源"
             }
         },
         {
             "types": "单一来源采购公告",
             "code": "8a817ecb39d832560139d85806a70afa",
             "meta": {
-                "zhaobiao_type": "单一来源采购公告"
+                "zhaobiao_type": "单一来源"
             }
         }
     ],
@@ -135,7 +135,7 @@
                     "xpath": "//div[@class='tableBox']"
                 },
                 "key_word": {
-                    "money": ["总金额(...)元", "预算金额(...)"],
+                    "money": ["总金额(...)元", "预算金额(...)", "预算金额（元）(...)", "总金额（元）(...)"],
                     "source_company": ["采购代理机构名称(...)"]
                 }
             }

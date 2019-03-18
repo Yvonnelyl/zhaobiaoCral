@@ -1,0 +1,80 @@
+{
+    "name": "hefei",
+    "main_url": "http://ggzy.hefei.gov.cn",
+
+    "item_value": ["fwebsite", "fregion"],
+        "fwebsite": "合肥政府采购网",
+        "fregion": "合肥",
+
+    "start_url": "http://ggzy.hefei.gov.cn/EpointWebBuilderService/hfggzyGetGgInfo.action?cmd=getinfojyxxlist&pageIndex=1&pageSize=20&Categorynum=002002001&infoC=3401&ggstartdate={self.start_time}&ggenddate={self.end_time}",
+    "methods": "GET",
+
+    "start_time": "2019-01-01",
+    "end_time": "2019-03-01",
+
+    "date_format": ["%Y-%m-%d", "%Y%m%d"],
+
+    "period": "1",
+
+    "func": {
+        "parse": {
+            "parse_json": {
+                "json_in_json": {
+                    "path": "custom"
+                },
+                "table_row": {
+                    "method": "json",
+                    "path": "infoList"
+                },
+                "item_loader": {
+                    "ftime": [
+                        "json",
+                        "infodate2"
+                    ],
+                    "ftitle": [
+                        "json",
+                        "title"
+                    ],
+                    "__categorynum": [
+                        "json",
+                        "categorynum"
+                    ],
+                    "__articleid": [
+                        "json",
+                        "infoid"
+                    ],
+                    "furl":[
+                        "format",
+                        "http://ggzy.hefei.gov.cn/jyxx/002002/{__categorynum}/{self.end_times[1]}/{__articleid}.html?ztbtab={__categorynum}"
+                    ]
+                },
+                "request": {
+                    "callback": "parse_detail"
+                }
+            },
+            "next_page": {
+                  "url_num": "&pageIndex=([\d]+)"
+            }
+        },
+        "parse_detail": {
+            "parse_article": {
+                "text": {
+                    "xpath": "//div[@class='ewb-info-main clearfix']"
+                },
+                "file": {
+                    "xpath": "//div[@class='file']"
+                },
+                "key_word": {
+                    "money": ["项目预算：(...)元"],
+                    "source_company": ["项目单位：(...)"]
+                }
+            }
+        }
+    }
+}
+
+//-------------------------------材料------------------------------------
+//{'controls': [],
+// 'custom': '{"infoList":[{"categorynum":"002002001","infoh":"","infoid":"18ab46f3-5531-49da-a31f-947f778c6158","infoa":"","zfcgdate":"公示结束","title":"巢湖市2018-34号AB地块评估","infod":"巢湖","infoc":"340188","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"e407335c-1478-4e5e-b63c-7080e387b787","infoa":"","zfcgdate":"公示结束","title":"巢湖市2017-17号ABCDE地块评估","infod":"巢湖","infoc":"340188","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"019a73d7-c07a-4b2f-bddd-d321569f6fde","infoa":"","zfcgdate":"公示结束","title":"合肥市交通运输管理处综合管理平台项目软件运维服务","infod":"合肥","infoc":"340101","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"05e1315d-07bc-4c89-b7f9-bb8563d23a91","infoa":"","zfcgdate":"公示结束","title":"中共合肥市委党校智慧教室设备更新购置","infod":"合肥","infoc":"340101","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"2f3d3265-e071-4c1f-8f3b-5b13f6f7bc64","infoa":"","zfcgdate":"公示结束","title":"瑶海区三十八中东区校园广播设备采购及安装","infod":"瑶海","infoc":"340102","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"fd9ddcd4-96ea-4f91-8075-747d110b2e95","infoa":"","zfcgdate":"公示结束","title":"2019-2020年合肥市市直党政机关会议定点饭店","infod":"合肥","infoc":"340101","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"7c5b1b4b-fbf0-453c-aefe-2f314602afd1","infoa":"","zfcgdate":"公示结束","title":"宿州学院2019监控设备采购","infod":"省直","infoc":"340000","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"08f5c201-94ff-4747-b446-f31768b476ea","infoa":"","zfcgdate":"公示结束","title":"新站高新区2019年义务植树节","infod":"新站","infoc":"340155","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"caea16e0-d212-4a25-973a-98d8145b1c1c","infoa":"","zfcgdate":"公示结束","title":"巢湖市电影发行放映公司地块评估","infod":"巢湖","infoc":"340188","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"d7f1c521-32e7-48c7-bede-1ac659a5fe11","infoa":"","zfcgdate":"公示结束","title":"庐江县中医院洗涤服务、布类租赁服务","infod":"庐江","infoc":"340199","infob":"","youxiaodate":"正在报名","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"87e21b5a-0c5a-471a-8547-b44b062b920a","infoa":"","zfcgdate":"公示结束","title":"高新区2019年干部离任审计","infod":"高新","infoc":"340157","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"61ff8cc1-2e5e-4dd6-91a3-143a8b6a001c","infoa":"","zfcgdate":"公示结束","title":"巢湖市2018-45号、2019-G5号、2019-G6号、2019-G7号、2019-G8号地块评估","infod":"巢湖","infoc":"340188","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"c78f2eed-6942-4535-9a79-45c430396f58","infoa":"","zfcgdate":"公示结束","title":"巢湖市2018-16号、2019-01号、2019-02号、2019-03号、2019-04号地块评估","infod":"巢湖","infoc":"340188","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"9f91d58f-5c5b-4c32-b57e-6934f92f3e75","infoa":"","zfcgdate":"公示结束","title":"医用手术器械采购","infod":"肥东","infoc":"340122","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"d338990d-d8d4-4a3f-b0f0-3b3953c935f9","infoa":"","zfcgdate":"公示结束","title":"巢湖市姥山路两侧公园养护管理服务","infod":"巢湖","infoc":"340188","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"f22644c7-f4f1-4871-bc5f-96e0fa826abe","infoa":"","zfcgdate":"公示结束","title":"五金二厂复建点电梯采购安装","infod":"庐阳","infoc":"340103","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"3085230b-13a6-4b84-ae7f-e78e90245744","infoa":"","zfcgdate":"公示结束","title":"巢湖市城市阅读空间书桥、裕溪河畔阅读点运营服务","infod":"巢湖","infoc":"340188","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-26","gongshienddate":"正在公示","infodate":"2019-02-26 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"a6dc5f3e-6b7d-40a0-a4b1-9a5e0237e7c1","infoa":"","zfcgdate":"公示结束","title":"庐江县矾山镇石峡村\\u201c林业三变\\u201d森林资源调查及评估","infod":"庐江","infoc":"340199","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-25","gongshienddate":"正在公示","infodate":"2019-02-25 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"18a9db7b-4b04-431d-83dd-6ac7cf0d63d9","infoa":"","zfcgdate":"公示结束","title":"创新产业园、明珠产业园等零星工程审计咨询","infod":"高新","infoc":"340157","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-25","gongshienddate":"正在公示","infodate":"2019-02-25 00:00"}, {"categorynum":"002002001","infoh":"","infoid":"6d576288-d1d1-4371-a1dd-a1e118374576","infoa":"","zfcgdate":"公示结束","title":"合肥经开区江淮松芝项目土方平整工程跟踪审计","infod":"经开","infoc":"340124","infob":"","youxiaodate":"报名结束","infodate2":"2019-02-25","gongshienddate":"正在公示","infodate":"2019-02-25 00:00"}]}',
+// 'status': {'code': '200', 'text': '', 'url': ''}}
+//

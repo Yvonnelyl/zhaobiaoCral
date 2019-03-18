@@ -68,8 +68,8 @@ ITEM_PIPELINES = {
     # 'zhaobiaoCral.pipelines.ArticleImagesPipeline':1,
     'zhaobiaoCral.pipelines.ZBFilesPipeline': 250,
     # 'scrapy.pipelines.files.FilesPipeline': 1,
-    'zhaobiaoCral.pipelines.OracleAsyncPipeline': 100,
-    'zhaobiaoCral.pipelines.FileInfoPipeline': 500,
+    'zhaobiaoCral.pipelines.OracleAsyncPipeline': 300,
+    # 'zhaobiaoCral.pipelines.FileInfoPipeline': 500,
 
 }
 

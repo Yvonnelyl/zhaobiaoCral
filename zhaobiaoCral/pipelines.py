@@ -14,8 +14,8 @@ import re
 class ZBFilesPipeline(FilesPipeline):
 
     def get_media_requests(self, item, info):
-        if isinstance(item, items.FileItem):
-            return [Request(x, meta={'farea': item['farea']}) for x in item.get(self.files_urls_field, [])]
+        # if isinstance(item, items.FileItem):
+        return [Request(x, meta={'farea': item['farea']}) for x in item.get(self.files_urls_field, [])]
 
     def item_completed(self, results, item, info):
         """
@@ -30,7 +30,8 @@ class ZBFilesPipeline(FilesPipeline):
         """
         file_paths = [x['path'] for ok, x in results if ok]
         if not file_paths:
-            raise DropItem("Item contains no files")
+            # raise DropItem("Item contains no files")
+            pass
         else:
             item['fpath'] = ','.join(file_paths)
             item['file_urls']  = ','.join(item['file_urls'])
@@ -69,13 +70,9 @@ class OracleAsyncPipeline():
         pass
 
     def process_item(self, item, spider):
-        if self.judge_item(item):
-            self.dbpool.runInteraction(self.insert_db, item)
+        # if self.judge_item(item):
+        self.dbpool.runInteraction(self.insert_db, item)
         return item
-
-    def judge_item(self, item):
-        if not isinstance(item, items.FileItem):
-            return True
 
     def insert_db(self, tx, item):
         item_name = re.search('.+\.(.+)\'', str(item.__class__))[1]
@@ -106,9 +103,3 @@ class OracleAsyncPipeline():
         # 拼接sql
         sql = f'INSERT INTO {table_name} ({cln}, fudtime, fisuse) VALUES ({value_format}, sysdate, \'1\')'.format()
         return sql
-
-
-class FileInfoPipeline(OracleAsyncPipeline):
-    def judge_item(self, item):
-        if isinstance(item, items.FileItem):
-            return True

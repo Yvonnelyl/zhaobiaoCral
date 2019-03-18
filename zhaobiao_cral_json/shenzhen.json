@@ -1,0 +1,70 @@
+{
+    "name": "shenzhen",
+    "main_url": "http://www.cgzx.sz.gov.cn",
+
+    "item_value": ["fwebsite", "fregion"],
+        "fwebsite": "四川政府采购网",
+        "fregion": "四川",
+
+    "start_url": [
+        "http://www.szzfcg.cn/portal/topicView.do?method=view&id=1660",
+        "http://www.szzfcg.cn/portal/topicView.do?method=view&id=1660&agencyType=1",
+        "http://www.szzfcg.cn/portal/topicView.do?method=view&id=1660&agencyType=2",
+        "http://www.szzfcg.cn/portal/topicView.do?method=view&id=1660&agencyType=3"
+    ],
+        "method": "post",
+            "param": {
+                "data": {
+                    "ec_i": "topicChrList_20070702",
+                    "topicChrList_20070702_crd": "20",
+                    "topicChrList_20070702_p": "1"
+                }
+        },
+
+    "func": {
+        "parse": {
+            "parse_list": {
+                "table_row": {
+                    "method": "xpath",
+                    "path": "//tbody [@class='tableBody']/tr"
+                },
+
+                "item_loader": {
+                    "ftime": [
+                        "add_xpath",
+                        "./td[-1]/text()"
+                      ],
+                    "furl": [
+                        "add_xpath",
+                        "./td[3]/a/@href"
+                    ],
+                    "ftitle": [
+                        "add_xpath",
+                        "./td[2]/text()"
+                    ]
+                },
+
+                "request": {
+                    "callback": "parse_detail"
+                }
+            },
+            "next_page": {
+                "data": "topicChrList_20070702_p"
+            }
+        },
+        "parse_detail": {
+            "parse_article": {
+                "text": {
+                    "xpath": "//table[@id='bulletinContent']"
+                },
+                "file": {
+                    "xpath": "//table[@id='bulletinContent']"
+                },
+                "key_word": {
+                    "money": ["总金额(...)元", "预算金额(...)", "预算金额（元）(...)", "总金额（元）(...)"],
+                    "source_company": ["单位名称：(...)", "采购人及联系人电话(...)", "采购人：(...)", "受(.+?)委托"]
+                }
+            }
+        }
+    }
+}

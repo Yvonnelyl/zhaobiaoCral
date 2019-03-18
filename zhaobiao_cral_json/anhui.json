@@ -1,13 +1,24 @@
 {
-    "name": "anhuiZhaobiaocral",
+    "name": "anhui",
     "main_url": "http://www.ahzfcg.gov.cn",
-    "fwebsite": ["安徽政府采购网"],
-    "fregion": ["安徽"],
+
     "item_value": ["fwebsite", "fregion"],
-    "nextpage_xpath": "",
-    "next_page_signal": "",
-    "nextpage_url_num_search_re": "pageNum=(.+)&",
-    "param": [
+        "fwebsite": ["安徽政府采购网"],
+        "fregion": ["安徽"],
+
+    "start_url": "http://www.ahzfcg.gov.cn/cmsNewsController/getCgggNewsList.do?pageNum=1&numPerPage=20&title=&buyer_name=&agent_name=&proj_code=&bid_type=011&type={types}&dist_code=340000&pubDateStart={self.start_time}&pubDateEnd={self.end_time}&pProviceCode=340000&areacode_city=&areacode_dist=&channelCode=cggg",
+        "method": "get",
+        "header": {
+        "Accept": "text/html, */*; q=0.01",
+         "Accept-Encoding": "gzip, deflate",
+         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+         "Connection": "keep-alive",
+         "Host": "www.ahzfcg.gov.cn",
+         "Referer": "http://www.ahzfcg.gov.cn/cmsNewsController/cmsNewsDetail.do",
+         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36",
+         "X-Requested-With": "XMLHttpRequest"
+    },
+        "param": [
         {
             "types": "105",
             "meta": {
@@ -35,31 +46,18 @@
         {
             "types": "102",
             "meta": {
-                "zhaobiao_type": "询价采购公告"
+                "zhaobiao_type": "询价"
             }
         },
         {
             "types": "104",
             "meta": {
-                "zhaobiao_type": "单一来源采购公告"
+                "zhaobiao_type": "单一来源"
             }
         }
     ],
-    "start_time": "2019-01-23",
-    "end_time": "2019-01-24",
-    "header": {
-        "Accept": "text/html, */*; q=0.01",
-         "Accept-Encoding": "gzip, deflate",
-         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-         "Connection": "keep-alive",
-         "Cookie": "JSESSIONID=8F6E680D6DAE701D20C5533BF26D2CF4",
-         "Host": "www.ahzfcg.gov.cn",
-         "Referer": "http://www.ahzfcg.gov.cn/cmsNewsController/cmsNewsDetail.do",
-         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36",
-         "X-Requested-With": "XMLHttpRequest"
-    },
-    "start_url": "http://www.ahzfcg.gov.cn/cmsNewsController/getCgggNewsList.do?pageNum=1&numPerPage=20&title=&buyer_name=&agent_name=&proj_code=&bid_type=011&type={types}&dist_code=340000&pubDateStart={self.start_time}&pubDateEnd={self.end_time}&pProviceCode=340000&areacode_city=&areacode_dist=&channelCode=cggg"
-    ,"func": {
+
+    "func": {
         "parse": {
             "parse_list": {
                 "table_row": {
@@ -80,18 +78,25 @@
                         "./td[1]/a/text()"
                     ]
                 },
-                "yield": {
-                    "reuquest": {
+                "reuquest": {
                         "callback": "parse_detail"
                     }
-                }
+            },
+            "next_page": {
+                "url_num": "&pageNum=([\d]+)"
             }
         },
         "parse_detail": {
             "parse_article": {
-                "meta_item": {
-                    "id": "farticleid",
-                    "article": "farticle"
+                "text": {
+                    "xpath": "//div[@class='frameNews']"
+                },
+                "file": {
+                    "xpath": "//div[@class='related_new']"
+                },
+                "key_word": {
+                    "money": ["项目概算：(...)元", "项目预算：(...)元"],
+                    "source_company": ["项目单位：(...)"]
                 }
             }
         }
