@@ -16,31 +16,47 @@ import re
 def _utf8_to_gbk(string):
     return string.encode('gbk',errors='ignore').decode('gbk')
 
-def _drop_gang_ntr(string):
+def _drop_blank_ntr(string):
+    return re.sub(r'\n|\t|\r| ', '', string)
+
+def _drop_ntr(string):
     return re.sub(r'\n|\t|\r', '', string)
 
 def oracle_field():
+    """
+    去掉 \n \r\ t与空格，再把utf8转成gbk
+    :return:
+    """
     return scrapy.Field(
-        input_processor=MapCompose(_utf8_to_gbk, _drop_gang_ntr),
-        output_processor = TakeFirst()
+        input_processor=MapCompose(_utf8_to_gbk, _drop_blank_ntr),
+        output_processor=TakeFirst()
+    )
+
+def only_oracle_field():
+    """
+    只把utf8转成gbk
+    :return:
+    """
+    return scrapy.Field(
+        input_processor=MapCompose(_utf8_to_gbk, _drop_ntr),
+        output_processor=TakeFirst()
     )
 
 
 class __OriginItem(scrapy.Item):
-    farticleid = oracle_field()
+    farticleid = only_oracle_field()
 
 
-class FileItem(scrapy.Item):
-    farticleid = scrapy.Field()
-    file_urls = scrapy.Field()
-    fpath = scrapy.Field()
-    farea = scrapy.Field()
+class FileItem(__OriginItem):
+    file_urls = only_oracle_field()
+    fpath = only_oracle_field()
+    farea = only_oracle_field()
 
 
 class TextItem(__OriginItem):
     fhtml = oracle_field()
-    fartcle = oracle_field()
-    ftext = oracle_field()
+    fartcle = only_oracle_field()
+    ftext = only_oracle_field()
 
 
 for item_name, field_list in CREATE_ITEM.items():

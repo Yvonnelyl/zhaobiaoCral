@@ -30,7 +30,11 @@ class BaseSpider(spiders.Spider):
         # 如果有data，肯定是post
         if 'data' in self.param[0]:
             self.methods = "POST"
-        methods = self.methods.upper()
+        try :
+            methods = self.methods.upper()
+        except Exception:
+            # 默认是get
+            methods = "GET"
 
         # 根据get  post方法选择不同request方法 并建立同名但不同逻辑的函数
         if methods == "GET":
@@ -42,7 +46,7 @@ class BaseSpider(spiders.Spider):
             def get_date(p):
                 for attr in p["data"]:
                     # 把self的start_date end_date format到data dict 里面
-                    p["data"][attr] = p["data"][attr].foramat(self=self)
+                    p["data"][attr] = p["data"][attr].format(self=self)
                 return {"formdata": p["data"]}
 
         #  根据是否有param要format 建立同名但不同逻辑的函数
@@ -67,53 +71,6 @@ class BaseSpider(spiders.Spider):
                     **get_date(p), **get_meta(p),
                     callback=self.parse
                 )
-
-    def parse_json(self, dct, response, **d):
-        yield from self.parse_list(dct, response, parse_type="json", **d)
-
-    def __get_table_row(self, dct, response, parse_type):
-        """
-        获取table行
-        """
-        # 从html里用xpath提取
-        if parse_type == "html":
-            table = getattr(response, dct['table_row']['method'])(dct['table_row']['path'])
-            if table:
-                self.page_has_data = 1
-            else:
-                self.page_has_data = 0
-        # 用json_path提取
-        elif parse_type == "json":
-            response_d = json.loads(response.text)
-            try:
-                if "json_in_json"  in dct:
-                    response_d = self.__get_json_in_json(response_d, dct)
-
-                path_list = dct["table_row"]["path"].split(',')
-                table = self.__json_path(path_list, response_d)
-            except KeyError:
-                self.page_has_data = 0
-            self.page_has_data = 1
-        return table
-
-    def __get_json_in_json(self, response_d, dct):
-        """
-        获取json里的json字符串
-        """
-        path_list = dct["json_in_json"]["path"].split(",")
-        return json.loads(self.__json_path(path_list, response_d))
-
-    def __json_path(self, json_path, json_d):
-        """
-        通过自定义的 json_path 找到json里的目标
-        """
-        if isinstance(json_path, str):
-            json_tmp = json_d[json_path]
-        elif isinstance(json_path, list):
-            json_tmp = json_d
-            for path in json_path:
-                json_tmp = json_tmp[path]
-        return json_tmp
 
     def parse_list(self,dct, response, **d):
         """
@@ -157,6 +114,9 @@ class BaseSpider(spiders.Spider):
 
             yield row_item
 
+    def parse_json(self, dct, response, **d):
+        yield from self.parse_list(dct, response, parse_type="json", **d)
+
     def parse_article(self, dct, response, **d):
         # 生成uuid
         article_id = response.meta['article_id']
@@ -184,6 +144,50 @@ class BaseSpider(spiders.Spider):
                           , meta=response.meta)
 
 
+    def __get_table_row(self, dct, response, parse_type):
+        """
+        获取table行
+        """
+        # 从html里用xpath提取
+        if parse_type == "html":
+            table = getattr(response, dct['table_row']['method'])(dct['table_row']['path'])
+            if table:
+                self.page_has_data = 1
+            else:
+                self.page_has_data = 0
+        # 用json_path提取
+        elif parse_type == "json":
+            response_d = json.loads(response.text)
+
+            try:  # 提取table报错当做最后一页
+                if "json_in_json"  in dct:
+                    response_d = self.__get_json_in_json(response_d, dct)
+
+                path_list = dct["table_row"]["path"].split(',')
+                table = self.__json_path(path_list, response_d)
+            except KeyError:
+                # 提取table报错当做最后一页
+                self.page_has_data = 0
+            else:
+                # table为空也当做最后一页
+                if not table:
+                    self.page_has_data = 0
+                else:
+                    self.page_has_data = 1
+        return table
+
+    def __json_path(self, json_path, json_d):
+        """
+        通过自定义的 json_path 找到json里的目标
+        """
+        if isinstance(json_path, str):
+            json_tmp = json_d[json_path]
+        elif isinstance(json_path, list):
+            json_tmp = json_d
+            for path in json_path:
+                json_tmp = json_tmp[path]
+        return json_tmp
+
     def __get_list(self, dct, article_id, response):
         pass
 
@@ -202,28 +206,31 @@ class BaseSpider(spiders.Spider):
     def __get_text(self, dct, article_id, response):
         d = dct["text"]
 
-        self.article_xpath = d["xpath"] # 给keyword用
-        text_item = items.TextItem()
+        self.article_xpath = d["xpath"]  # 给keyword用
+        text_item = ItemLoader(item=items.TextItem(), response=response)
         selectors = response.xpath(d["xpath"])
-        text_item['farticleid'] = article_id
-        text_item['fhtml'] = response.text # todo 编码问题
-        text_item["fartcle"] = selectors.get()
+        t = selectors.get()
+        text_item.add_value('fartcle', t)
+        text_item.add_value('farticleid', article_id)
+        text_item.add_value('fhtml', response.text)
         self.text = selectors.xpath('string(.)').extract_first()
-        text_item["ftext"] = self.text
-
-        yield text_item
+        text_item.add_value('ftext', self.text)
+        res = text_item.load_item()
+        yield res
 
     def __get_key_word(self, dct, article_id, response):
         d = dct["key_word"]
         #初始化提取关键字 的item
-        key_word_item = items.KeywordItem()
-        key_word_item['farticleid'] = article_id
+        key_word_item = ItemLoader(items.KeywordItem())
+
+        key_word_item.add_value('farticleid', article_id)
         #     关键字：time       表达式列表：【re_str, re_str, re_str】
         for key_word, expression_list in d.items():
             # 循环expression_list中的正则，并提取文章内容。
             tmp_result = self.loop_extract(expression_list, response)
-            key_word_item[key_word] = tmp_result
-            yield key_word_item
+            key_word_item.add_value(key_word, tmp_result)
+
+        yield key_word_item.load_item()
 
 
     def loop_extract(self, expression_list, response):
@@ -241,20 +248,31 @@ class BaseSpider(spiders.Spider):
         return ''
 
     def my_re2re(self, expression):
-        # 我的正則轉成真正的正則
-        re_list = re.split(r'\)|\(', expression)
-        if len(re_list) == 3:
-            re_str = re_list[0] + '[\n\r\t ]+(.+)' + re_list[2]
-            return re_str
-        elif len(re_list) == 2:
-            end = re_list[1].replace('...', '')
-            if end:
-                re_str = re_list[0] + '[\n\r\t ]+(.+' + end + ')'
+        if "..."  in expression:
+            # 我的正則轉成真正的正則
+            re_list = re.split(r'\)|\(', expression)
+            if len(re_list) == 3:
+                re_str = re_list[0] + '[\n\r\t ]*(.+)' + re_list[2]
+                return re_str
+            elif len(re_list) == 2:
+                end = re_list[1].replace('...', '')
+                if end:
+                    re_str = re_list[0] + '[\n\r\t ]*(.+' + end + ')'
+                else:
+                    re_str = re_list[0] + '[\n\r\t ]*(.+)' + '[\n\r\t ]+'
+                return re_str
             else:
-                re_str = re_list[0] + '[\n\r\t ]+(.+' + '[\n\r\t ]+'
-            return re_str
+                raise Exception("keyword: key_word error")
+        # 不是my re
         else:
-            raise Exception("keyword: key_word error")
+            return expression
+
+    def __get_json_in_json(self, response_d, dct):
+        """
+        获取json里的json字符串
+        """
+        path_list = dct["json_in_json"]["path"].split(",")
+        return json.loads(self.__json_path(path_list, response_d))
 
     def __item_loader(self, item_name, dct, response, selector=None, load_type="html"):
         """

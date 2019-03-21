@@ -21,13 +21,15 @@ NEWSPIDER_MODULE = 'zhaobiaoCral.spiders'
 # Obey robots.txt rules
 # ROBOTSTXT_OBEY = True
 
+LOG_LEVEL = 'WARNING'
+
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 0.3
+DOWNLOAD_DELAY = 0.5
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -137,6 +139,21 @@ CREATE_ITEM = {
 
 ENGINE_INFO = "oracle+cx_oracle://hiibase:hiibase@200.100.100.69:1521/dgr",
 
-
+# 下载文件时可以接受的文件类型
+ACCEPTFILETYPE = {
+        "d0cf11e0a1b11ae10000": 'xls',
+        'ffd8ffe000104a464946': 'jpg',
+        '89504e470d0a1a0a0000': 'png',
+        '47494638396126026f01': 'gif',
+        'd0cf11e0a1b11ae10000': 'doc',
+        '255044462d312e350d0a': 'pdf',
+        '504b0304140000080044': 'zip',
+        '504b03040a0000080000': 'zip',
+        '504b03040a0000000000': 'zip',
+        '526172211a0700cf9073': 'rar',
+        '1f8b0800000000000000': 'gz',
+        '504b0304140006000800': 'docx',
+        'd0cf11e0a1b11ae10000': 'wps',
+    }
 
 

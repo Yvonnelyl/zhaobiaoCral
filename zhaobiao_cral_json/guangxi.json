@@ -8,12 +8,14 @@
 
     "start_url": "http://www.gxzfcg.gov.cn/CmsNewsController/search/chnlCodes-/distin-/beginDate-0/endDate-0/p-20/c-1/0-0.html",
         "method": "post",
+        "start_time" : "2019-01-01",
+        "end_time" : "2019-03-01",
         "param": [
             {
                 "data": {
                   "cmsNews.str3": "G-00",
-                  "cmsNews.startPubdate": "{self.start_date}",
-                  "cmsNews.endPubdate": "{self.end_date}"
+                  "cmsNews.startPubdate": "{self.start_time}",
+                  "cmsNews.endPubdate": "{self.end_time}"
                 },
                 "meta": {
                   "zhaobiao_type": "公开招标"
@@ -22,8 +24,8 @@
             {
                 "data":  {
               "cmsNews.str3": "J-02",
-              "cmsNews.startPubdate": "{self.start_date}",
-              "cmsNews.endPubdate": "{self.end_date}"
+              "cmsNews.startPubdate": "{self.start_time}",
+              "cmsNews.endPubdate": "{self.end_time}"
               },
                 "meta": {
                   "zhaobiao_type": "邀请招标"
@@ -32,8 +34,8 @@
             {
                 "data": {
                   "cmsNews.str3": "X-04",
-                  "cmsNews.startPubdate": "{self.start_date}",
-                  "cmsNews.endPubdate": "{self.end_date}"
+                  "cmsNews.startPubdate": "{self.start_time}",
+                  "cmsNews.endPubdate": "{self.end_time}"
                   },
                 "meta": {
                   "zhaobiao_type": "竞争性谈判"
@@ -42,8 +44,8 @@
             {
                   "data":              {
                   "cmsNews.str3": "D-03",
-                "cmsNews.startPubdate": "{self.start_date}",
-                "cmsNews.endPubdate": "{self.end_date}"
+                "cmsNews.startPubdate": "{self.start_time}",
+                "cmsNews.endPubdate": "{self.end_time}"
                 },
                   "meta": {
                     "zhaobiao_type": "单一来源"
@@ -52,17 +54,14 @@
             {
                   "data":             {
                 "cmsNews.str3": "Y-01",
-                "cmsNews.startPubdate": "{self.start_date}",
-                "cmsNews.endPubdate": "{self.end_date}"
+                "cmsNews.startPubdate": "{self.start_time}",
+                "cmsNews.endPubdate": "{self.end_time}"
               },
                   "meta": {
                     "zhaobiao_type": "询价"
                   }
               }
         ],
-
-    "date_format": "%Y-%m-%d",
-    "period": "1",
 
     "func": {
         "parse": {
@@ -102,8 +101,8 @@
                     "xpath": "//div[@class='column noBox']"
                 },
                 "key_word": {
-                    "money": ["预算金额（万元）：(...)", "采购预算（人民币）：(...)。", "采购预算金额：(...)元", "¥(.+?)）"],
-                    "source_company": ["采购代理机构名称(...)", "受(.+?)委托"]
+                    "money": ["预算金额[\n\t\r ]*(（万元）：[\n\t\r ]*.+?)[\n\t\r ]", "采购预算（人民币）：(...)", "采购预算金额[（人民币）]*：(.+?)元", "¥(.+?)）"],
+                    "source_company": ["受(.+?)[的]*委托", "项目单位：(...)", "采购人\\(甲方\\)：[\n\t\r ]*(.+?)[\n\t\r ]", "招标人：(...)"]
                 }
             }
         }

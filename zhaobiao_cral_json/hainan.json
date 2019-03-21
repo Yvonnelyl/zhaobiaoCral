@@ -6,7 +6,7 @@
         "fwebsite": "海南政府采购网",
         "fregion": "海南",
     "start_url": "http://www.ccgp-hainan.gov.cn/cgw/cgw_list.jsp?begindate={self.start_time}&currentPage=1&enddate={self.end_time}&title=&bid_type={zbtype}&proj_number=&zone=&ctype=",
-        "method": "post",
+        "methods": "get",
         "param": [
             {
                 "param": {
@@ -57,7 +57,7 @@
                 }
             }
         ],
-    "date_format": "%Y-%m-%d",
+    "date_format": ["%Y-%m-%d"],
     "period": "1",
 
     "func": {

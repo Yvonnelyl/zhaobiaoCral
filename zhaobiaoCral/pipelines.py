@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
-from twisted.enterprise import adbapi
-from scrapy.pipelines.files import FilesPipeline
 from scrapy.exceptions import DropItem
+from .items import FileItem
+from twisted.enterprise import adbapi
+from scrapy.pipelines.files import FilesPipeline, FileException
 from scrapy import Request
-from . import items
+from base.fileType import filetype
 import re
+from hashlib import md5
+from zhaobiaoCral.settings import  ACCEPTFILETYPE
 
 # Define your item pipelines here
 #
@@ -15,7 +18,9 @@ class ZBFilesPipeline(FilesPipeline):
 
     def get_media_requests(self, item, info):
         # if isinstance(item, items.FileItem):
-        return [Request(x, meta={'farea': item['farea']}) for x in item.get(self.files_urls_field, [])]
+        return [
+            Request(x, meta={'farea': item['farea']}) for x in item.get(self.files_urls_field, [])
+        ]
 
     def item_completed(self, results, item, info):
         """
@@ -28,26 +33,56 @@ class ZBFilesPipeline(FilesPipeline):
                  (False,
                   Failure(...))]
         """
+        if not isinstance(item, FileItem):
+            return item
         file_paths = [x['path'] for ok, x in results if ok]
+        # 如果是file下载又为空就扔掉
         if not file_paths:
-            # raise DropItem("Item contains no files")
-            pass
+            raise DropItem("Item contains no files")
         else:
+            # 把字符串拼起来
             item['fpath'] = ','.join(file_paths)
             item['file_urls']  = ','.join(item['file_urls'])
 
         return item
 
     def file_path(self, request, response=None, info=None):
+        if hasattr(self, "doc_type_code"):
+            path = self.__get_path(self.doc_type_code, request)
+            return path
+        else: return ''
+
+
+    def __get_path(self, doc_type_code, request):
         # 接收上面meta传递过来的图片名称
         farea = request.meta['farea']
         # 提取url前面名称作为图片名
-        file_name = request.url.split('/')[-1]
-        # 清洗Windows系统的文件夹非法字符，避免无法创建目录
-        folder_strip = re.sub(r'[?\\*|“<>:/]', '', str(farea))
-        # 分文件夹存储的关键：{0}对应着name；{1}对应着image_guid
-        filename = u'{0}/{1}'.format(folder_strip, file_name)
-        return filename
+        file_name = re.split(r'/', request.url)[-1]
+        # 若没有后缀名 根据文件头判断后缀名
+        if not re.search(r"\.[a-zA-Z]+$", file_name):
+            file_type = filetype(doc_type_code)
+
+            if '=' in file_name:
+                # 如果是垃圾，只能转码成md5 32字符串作为文件名
+                file_name = md5(file_name.encode("utf-8")).hexdigest()
+            file_name += f'.{file_type}'
+            # 清洗Windows系统的文件夹非法字符，避免无法创建目录
+            folder_strip = re.sub(r'[?\\*|“<>:/]', '', str(farea))
+            # 分文件夹存储的关键：{0}对应着name；{1}对应着image_guid
+            filename = u'{0}/{1}'.format(folder_strip, file_name)
+            return filename
+
+        else:
+            folder_strip = re.sub(r'[?\\*|“<>:/]', '', str(farea))
+            filename = u'{0}/{1}'.format(folder_strip, re.sub("\&.+", "", file_name))
+
+            # 清除 不是base.acceptFileType中包含的文件类型
+            for _, file_type_name in ACCEPTFILETYPE.items():
+                if filename.endswith(file_type_name):
+                    return filename
+            raise FileException
+
+        # 看是不是文件名 or 请求的.html?一堆参数&之类的垃圾
 
 
 class OracleAsyncPipeline():
@@ -75,6 +110,8 @@ class OracleAsyncPipeline():
         return item
 
     def insert_db(self, tx, item):
+        if isinstance(item, FileItem):
+            pass
         item_name = re.search('.+\.(.+)\'', str(item.__class__))[1]
         d = dict(item)
 
@@ -85,9 +122,13 @@ class OracleAsyncPipeline():
 
         # 生成sql
         sql = self._get_insert_sql(table_name, cln_name_list)
-
         # 运行
-        tx.execute(sql, cln_values)
+        try:
+            tx.execute(sql, cln_values)
+        except Exception:
+            print(cln_values)
+            raise Exception(cln_values)
+
 
     def close_spider(self, spider):
         self.dbpool.close()

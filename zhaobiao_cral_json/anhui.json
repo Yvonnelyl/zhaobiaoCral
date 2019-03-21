@@ -1,104 +1,116 @@
-{
-    "name": "anhui",
-    "main_url": "http://www.ahzfcg.gov.cn",
+    {
+        "name": "anhui",
+        "main_url": "http://www.ahzfcg.gov.cn",
 
-    "item_value": ["fwebsite", "fregion"],
-        "fwebsite": ["安徽政府采购网"],
-        "fregion": ["安徽"],
+        "item_value": ["fwebsite", "fregion"],
+            "fwebsite": "安徽政府采购网",
+            "fregion": "安徽",
 
-    "start_url": "http://www.ahzfcg.gov.cn/cmsNewsController/getCgggNewsList.do?pageNum=1&numPerPage=20&title=&buyer_name=&agent_name=&proj_code=&bid_type=011&type={types}&dist_code=340000&pubDateStart={self.start_time}&pubDateEnd={self.end_time}&pProviceCode=340000&areacode_city=&areacode_dist=&channelCode=cggg",
-        "method": "get",
-        "header": {
-        "Accept": "text/html, */*; q=0.01",
-         "Accept-Encoding": "gzip, deflate",
-         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-         "Connection": "keep-alive",
-         "Host": "www.ahzfcg.gov.cn",
-         "Referer": "http://www.ahzfcg.gov.cn/cmsNewsController/cmsNewsDetail.do",
-         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36",
-         "X-Requested-With": "XMLHttpRequest"
-    },
-        "param": [
-        {
-            "types": "105",
-            "meta": {
-                "zhaobiao_type": "邀请招标"
-            }
+        "start_url": "http://www.ahzfcg.gov.cn/cmsNewsController/getCgggNewsList.do?pageNum=1&numPerPage=20&title=&buyer_name=&agent_name=&proj_code=&bid_type=011&type={types}&dist_code=340000&pubDateStart={self.start_time}&pubDateEnd={self.end_time}&pProviceCode=340000&areacode_city=&areacode_dist=&channelCode=cggg",
+            "methods": "get",
+            "header": {
+            "Accept": "text/html, */*; q=0.01",
+             "Accept-Encoding": "gzip, deflate",
+             "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+             "Connection": "keep-alive",
+             "Host": "www.ahzfcg.gov.cn",
+             "Referer": "http://www.ahzfcg.gov.cn/cmsNewsController/cmsNewsDetail.do",
+             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36",
+             "X-Requested-With": "XMLHttpRequest"
         },
-        {
-            "types": "101",
-            "meta": {
-                "zhaobiao_type": "公开招标"
-            }
-        },
-        {
-            "types": "103",
-            "meta": {
-                "zhaobiao_type": "竞争性谈判"
-            }
-        },
-        {
-            "types": "1031",
-            "meta": {
-                "zhaobiao_type": "竞争性磋商"
-            }
-        },
-        {
-            "types": "102",
-            "meta": {
-                "zhaobiao_type": "询价"
-            }
-        },
-        {
-            "types": "104",
-            "meta": {
-                "zhaobiao_type": "单一来源"
-            }
-        }
-    ],
-
-    "func": {
-        "parse": {
-            "parse_list": {
-                "table_row": {
-                    "method": "xpath",
-                    "path": "//div[@class='zc_contract_top']/table[1]//tr"
-                },
-                "item_loader": {
-                    "ftime": [
-                        "add_xpath",
-                        "substring(./td[2]/a/text(),2,11)"
-                    ],
-                    "furl": [
-                        "add_xpath",
-                        "./td[1]/a/@href"
-                    ],
-                    "ftitle": [
-                        "add_xpath",
-                        "./td[1]/a/text()"
-                    ]
-                },
-                "reuquest": {
-                        "callback": "parse_detail"
+            "param": [
+                {
+                    "param": {
+                        "types": "105"
+                    },
+                    "meta": {
+                        "zhaobiao_type": "邀请招标"
                     }
+                },
+                {
+                    "param": {
+                        "types": "101"
+                    },
+                    "meta": {
+                        "zhaobiao_type": "公开招标"
+                    }
+                },
+                {
+                    "param": {
+                        "types": "103"
+                    },
+                    "meta": {
+                        "zhaobiao_type": "竞争性谈判"
+                    }
+                },
+                {
+                    "param": {
+                        "types": "1031"
+                    },
+                    "meta": {
+                        "zhaobiao_type": "竞争性磋商"
+                    }
+                },
+                {
+                    "param": {
+                        "types": "102"
+                    },
+                    "meta": {
+                        "zhaobiao_type": "询价"
+                    }
+                },
+                {
+                    "param": {
+                        "types": "104"
+                    },
+                    "meta": {
+                        "zhaobiao_type": "单一来源"
+                    }
+                }
+            ],
+
+        "func": {
+            "parse": {
+                "parse_list": {
+                    "table_row": {
+                        "method": "xpath",
+                        "path": "//div[@class='zc_contract_top']/table[1]//tr"
+                    },
+                    "item_loader": {
+                        "ftime": [
+                            "add_xpath",
+                            "substring(./td[2]/a/text(),2,11)"
+                        ],
+                        "furl": [
+                            "add_xpath",
+                            "./td[1]/a/@href"
+                        ],
+                        "ftitle": [
+                            "add_xpath",
+                            "./td[1]/a/text()"
+                        ]
+                    },
+                    "request": {
+                            "callback": "parse_detail"
+                        }
+                },
+                "next_page": {
+                    "url_num": "&pageNum=([\d]+)"
+                }
             },
-            "next_page": {
-                "url_num": "&pageNum=([\d]+)"
-            }
-        },
-        "parse_detail": {
-            "parse_article": {
-                "text": {
-                    "xpath": "//div[@class='frameNews']"
-                },
-                "file": {
-                    "xpath": "//div[@class='related_new']"
-                },
-                "key_word": {
-                    "money": ["项目概算：(...)元", "项目预算：(...)元"],
-                    "source_company": ["项目单位：(...)"]
+            "parse_detail": {
+                "parse_article": {
+                    "text": {
+                        "xpath": "//div[@class='frameNews']"
+                    },
+                    "file": {
+                        "xpath": "//div[@class='related_new']"
+                    },
+                    "key_word": {
+                        "money": ["项目概算：(...)元", "项目预算：(...)元"],
+                        "source_company": ["项目单位：(...)", "采 购 人:(...)", "招标人：(...)", "采购人名称(...)"]
+                    }
                 }
             }
         }
     }
-}
