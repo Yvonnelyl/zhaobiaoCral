@@ -1,0 +1,54 @@
+{
+    "name": "3xi",
+    "main_url": "http://www.ccgp-shanxi.gov.cn",
+
+    "item_value": ["fwebsite", "fregion"],
+        "fwebsite": "山西政府采购网",
+        "fregion": "山西",
+
+    "start_url": "http://www.ccgp-shanxi.gov.cn/view.php?app=&type=&nav=100&page=1",
+        "method": "get",
+
+    "func": {
+        "parse": {
+            "parse_list": {
+                "table_row": {
+                    "method": "xpath",
+                    "path": "//table[@id='node_list']/tbody/tr/td[1]"
+                },
+                "item_loader": {
+                    "ftime": [
+                        "add_xpath",
+                        "./input[1]/@value"
+                    ],
+                    "furl": [
+                        "add_xpath",
+                        "./a/@href"
+                    ],
+                    "ftitle": [
+                        "add_xpath",
+                        "./a/@title"
+                    ]
+                },
+                "request": {
+                    "callback": "parse_detail"
+                }
+            },
+
+            "next_page": {
+                  "url_num": "page=([\d]+)"
+            }
+        },
+        "parse_detail": {
+            "parse_article": {
+                "text": {
+                    "xpath": "//tr[@class='bk5']"
+                },
+                "key_word": {
+                    "money": ["计划投资:(...)元","采购预算:(...)元","项目预算:(...)元","本次招标投资额:(...)元","采购预算金额(...)元","本项目预算金额为(...)元","预算金额：(...)元","预算金额:(...)元"],
+                    "source_company": ["招标单位:(...)","采购人:(...)","采购单位:(...)","招标人:(...)","受(.+?)的委托"]
+                }
+            }
+        }
+    }
+}

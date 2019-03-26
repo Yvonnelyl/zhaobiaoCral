@@ -14,6 +14,8 @@ import re
 
 
 def _utf8_to_gbk(string):
+    if string is not str:
+        string = str(string)
     return string.encode('gbk',errors='ignore').decode('gbk')
 
 def _drop_blank_ntr(string):

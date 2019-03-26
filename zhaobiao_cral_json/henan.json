@@ -1,0 +1,60 @@
+{
+    "name": "henan",
+    "main_url": "http://www.hngp.gov.cn",
+
+    "item_value": ["fwebsite", "fregion"],
+        "fwebsite": "河南政府采购网",
+        "fregion": "河南",
+
+    "start_url": "http://www.hngp.gov.cn/henan/ggcx?appCode=H60&channelCode=0101&pageSize=20&pageNo=1",
+        "method": "get",
+
+    "date_format": ["%Y-%m-%d",  "%Y/%m/%d"],
+
+    "func": {
+        "parse": {
+            "parse_list": {
+                "table_row": {
+                    "method": "xpath",
+                    "path": "//div[@class='List2']/ul/li"
+                },
+                "item_loader": {
+                    "ftime": [
+                        "add_xpath",
+                        "./span/text()"
+                    ],
+                    "furl": [
+                        "add_xpath",
+                        "./a/@href"
+                    ],
+                    "ftitle": [
+                        "add_xpath",
+                        "./a/text()"
+                    ]
+                },
+                "request": {
+                    "re": "infoId=(.+?)\\&",
+                    "url": "http://www.hngp.gov.cn/webfile/henan/cgxx/cggg/webinfo/{item[ftime][1]}/{result}.htm",
+                    "callback": "parse_detail"
+                }
+            },
+            "next_page": {
+                  "url_num": "&pageNo=([\d]+)"
+            }
+        },
+        "parse_detail": {
+            "parse_article": {
+                "text": {
+                    "xpath": "/*"
+                },
+                "key_word": {
+                    "money": ["本项目采购预算：(...)元", "项目预算：(...)元", "预算价：(...)元", "小写：(...)元", "最高限价(...)元","预算金额：(...)元", "财政资金，(...)元","采购项目预算：(...)元","约(...)元","人民币(...)元","投资额：(...)元"],
+                    "source_company": ["采购单位：(...)联", "招标人：(...)：", "受(.+?)的委托", "受(.+?)委托", "采购人：(...)地","采购单位名称：(...)地"]
+                },
+                "file": {
+                    "xpath": "//div[@class='List1 Top5']"
+                }
+            }
+        }
+    }
+}

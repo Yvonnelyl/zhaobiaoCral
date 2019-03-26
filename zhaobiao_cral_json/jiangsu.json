@@ -1,0 +1,56 @@
+{
+    "name": "jiangsu",
+    "main_url": "http://www.ccgp-jiangsu.gov.cn",
+
+    "item_value": ["fwebsite", "fregion"],
+        "fwebsite": "江苏政府采购网",
+        "fregion": "江苏",
+
+    "start_url": [
+		"http://www.ccgp-jiangsu.gov.cn/cgxx/cggg/index.html",
+		"http://www.ccgp-jiangsu.gov.cn/cgxx/cggg/index_1.html"
+	],
+        "method": "get",
+
+    "func": {
+        "parse": {
+            "parse_list": {
+                "table_row": {
+                    "method": "xpath",
+                    "path": "//div[@class='list_list']/ul/li"
+                },
+                "item_loader": {
+                    "ftime": [
+                        "add_xpath",
+                        "./text()"
+                    ],
+                    "furl": [
+                        "add_xpath",
+                        "./a/@href"
+                    ],
+                    "ftitle": [
+                        "add_xpath",
+                        "./a/text()"
+                    ]
+                },
+                "request": {
+                    "callback": "parse_detail"
+                }
+            },
+            "next_page": {
+                  "url_num": "&index_([\d]+)"
+            }
+        },
+        "parse_detail": {
+            "parse_article": {
+                "text": {
+                    "xpath": "//div[@class='detail']"
+                },
+                "key_word": {
+                    "money": ["￥(.+?)[^\d]", "采购最高限价为人民币(...)元", "预算(...)元","预算金额（万元）(...)","采购预算为:(...)元","采购预算:(...)元", "采购预算为(...)元"],
+                    "source_company": ["采购人方面(...)", "招标代理机构(...)","采购单位:(...)","采购人:(...)","受(.+?)的委托", "受(.+?)委托"]
+                }
+            }
+        }
+    }
+}

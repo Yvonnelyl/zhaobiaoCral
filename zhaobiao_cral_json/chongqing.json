@@ -1,0 +1,120 @@
+{
+    "name": "chongqing",
+    "main_url": "https://www.cqgp.gov.cn/",
+
+    "item_value": ["fwebsite", "fregion"],
+        "fwebsite": "重庆政府采购网",
+        "fregion": "重庆",
+
+    "start_url": "https://www.cqgp.gov.cn/gwebsite/api/v1/notices/stable?endDate={self.end_time}&pi=1&projectPurchaseWay={code}&ps=20&startDate={self.start_time}&type=100,200,201,202,203,204,205,206,400,401,4001&userType=42",
+        "methods": "GET",
+        "start_time": "2019-01-01",
+        "end_time": "2019-03-01",
+        "date_format": ["%Y-%m-%d", "%Y%m%d"],
+        "period": "1",
+        "param": [
+            {
+                "param": {
+                    "code": "100"
+                },
+                "meta":  {
+                    "zhaobiao_type": "公开招标"
+                }
+            },
+            {
+                "param": {
+                    "code": "200"
+                },
+                "meta":  {
+                    "zhaobiao_type": "邀请招标"
+                }
+            },            {
+                "param": {
+                    "code": "300"
+                },
+                "meta":  {
+                    "zhaobiao_type": "竞争性谈判"
+                }
+            },            {
+                "param": {
+                    "code": "400"
+                },
+                "meta":  {
+                    "zhaobiao_type": "询价"
+                }
+            },            {
+                "param": {
+                    "code": "500"
+                },
+                "meta":  {
+                    "zhaobiao_type": "单一来源"
+                }
+            },            {
+                "param": {
+                    "code": "600"
+                },
+                "meta":  {
+                    "zhaobiao_type": "竞争性磋商"
+                }
+            }
+        ],
+
+    "func": {
+        "parse": {
+            "parse_json": {
+                "table_row": {
+                    "method": "json",
+                    "path": "notices"
+                },
+                "item_loader": {
+                    "ftime": [
+                        "json",
+                        "bidBeginTime"
+                    ],
+                    "ftitle": [
+                        "json",
+                        "title"
+                    ],
+                    "__id": [
+                        "json",
+                        "id"
+                    ],
+                    "__meta_source_company" : [
+                        "json",
+                        "buyerName"
+                    ],
+                    "__meta_money": [
+                        "json",
+                        "projectBudget"
+                    ],
+                    "furl":[
+                        "format",
+                        "https://www.cqgp.gov.cn/gwebsite/api/v1/notices/stable/{__id}"
+                    ]
+                },
+                "request": {
+                    "callback": "parse_detail"
+                }
+            },
+            "next_page": {
+                  "url_num": "&pi=([\d]+)"
+            }
+        },
+        "parse_detail": {
+            "json2html": "notice,html",
+            "parse_article": {
+                "text": {
+                    "xpath": "/*"
+                },
+                "file": {
+                    "xpath": "concat(//div[@list-name='附件列表']/@gm-download[1],'&fileName=',//div[@list-name='附件列表']/text()[1])",
+                    "url": "https://www.cqgp.gov.cn/gwebsite/files?filePath={}"
+                },
+                "key_word": {
+                    "money": [],
+                    "source_company": []
+                }
+            }
+        }
+    }
+}

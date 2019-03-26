@@ -1,0 +1,144 @@
+{
+    "name": "shanxi",
+    "main_url": "http://www.ccgp-shaanxi.gov.cn",
+
+    "item_value": ["fwebsite", "fregion"],
+        "fwebsite": "陕西政府采购网",
+        "fregion": "陕西",
+
+    "start_url": "http://www.ccgp-shaanxi.gov.cn/notice/noticeaframe.do?noticetype=3",
+        "method": "post",
+        "param": [
+            {
+                "data": {
+                    "page.pageNum": "1",
+                    "parameters['startdate']": "{self.start_time}",
+                    "parameters['enddate']": "{self.end_time}",
+                    "parameters['regionguid']": "610001"
+                }
+            },
+          {
+                "data": {
+                    "page.pageNum": "1",
+                    "parameters['startdate']": "{self.start_time}",
+                    "parameters['enddate']": "{self.end_time}",
+                    "parameters['regionguid']": "6101"
+                }
+            },
+          {
+                "data": {
+                    "page.pageNum": "1",
+                    "parameters['startdate']": "{self.start_time}",
+                    "parameters['enddate']": "{self.end_time}",
+                    "parameters['regionguid']": "6102"
+                }
+            },
+          {
+                "data": {
+                    "page.pageNum": "1",
+                    "parameters['startdate']": "{self.start_time}",
+                    "parameters['enddate']": "{self.end_time}",
+                    "parameters['regionguid']": "6103"
+                }
+            },
+          {
+                "data": {
+                    "page.pageNum": "1",
+                    "parameters['startdate']": "{self.start_time}",
+                    "parameters['enddate']": "{self.end_time}",
+                    "parameters['regionguid']": "6104"
+                }
+            },
+           {
+                "data": {
+                    "page.pageNum": "1",
+                    "parameters['startdate']": "{self.start_time}",
+                    "parameters['enddate']": "{self.end_time}",
+                    "parameters['regionguid']": "6105"
+                }
+            },
+                    {
+                "data": {
+                    "page.pageNum": "1",
+                    "parameters['startdate']": "{self.start_time}",
+                    "parameters['enddate']": "{self.end_time}",
+                    "parameters['regionguid']": "6106"
+                }
+            },
+                    {
+                "data": {
+                    "page.pageNum": "1",
+                    "parameters['startdate']": "{self.start_time}",
+                    "parameters['enddate']": "{self.end_time}",
+                    "parameters['regionguid']": "6107"
+                }
+            },
+                    {
+                "data": {
+                    "page.pageNum": "1",
+                    "parameters['startdate']": "{self.start_time}",
+                    "parameters['enddate']": "{self.end_time}",
+                    "parameters['regionguid']": "6108"
+                }
+            },
+                              {
+                "data": {
+                    "page.pageNum": "1",
+                    "parameters['startdate']": "{self.start_time}",
+                    "parameters['enddate']": "{self.end_time}",
+                    "parameters['regionguid']": "6109"
+                }
+            },
+                              {
+                "data": {
+                    "page.pageNum": "1",
+                    "parameters['startdate']": "{self.start_time}",
+                    "parameters['enddate']": "{self.end_time}",
+                    "parameters['regionguid']": "6110"
+                }
+            }
+        ],
+
+    "func": {
+        "parse": {
+            "parse_list": {
+                "table_row": {
+                    "method": "xpath",
+                    "path": "//table[@class='table table-no tab-striped tab-hover']/tbody/tr"
+                },
+                "item_loader": {
+                    "ftime": [
+                        "add_xpath",
+                        "./td[last()]/text()"
+                    ],
+                    "furl": [
+                        "add_xpath",
+                        "./td[3]/a/@href"
+                    ],
+                    "ftitle": [
+                        "add_xpath",
+                        "./td[3]/a/text()"
+                    ]
+                },
+                "request": {
+                    "callback": "parse_detail"
+                }
+            },
+
+            "next_page": {
+                  "data": "page.pageNum"
+            }
+        },
+        "parse_detail": {
+            "parse_article": {
+                "text": {
+                    "xpath": "//div[@class='inner-Box']"
+                },
+                "key_word": {
+                    "money": ["采购预算：(...)元"],
+                    "source_company": ["采购人名称：(...)"]
+                }
+            }
+        }
+    }
+}

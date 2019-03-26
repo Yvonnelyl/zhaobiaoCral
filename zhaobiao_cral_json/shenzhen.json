@@ -3,8 +3,8 @@
     "main_url": "http://www.cgzx.sz.gov.cn",
 
     "item_value": ["fwebsite", "fregion"],
-        "fwebsite": "四川政府采购网",
-        "fregion": "四川",
+        "fwebsite": "深圳政府采购网",
+        "fregion": "深圳",
 
     "start_url": [
         "http://www.szzfcg.cn/portal/topicView.do?method=view&id=1660",
@@ -13,13 +13,15 @@
         "http://www.szzfcg.cn/portal/topicView.do?method=view&id=1660&agencyType=3"
     ],
         "method": "post",
-            "param": {
+        "param": [
+            {
                 "data": {
                     "ec_i": "topicChrList_20070702",
                     "topicChrList_20070702_crd": "20",
                     "topicChrList_20070702_p": "1"
                 }
-        },
+            }
+        ],
 
     "func": {
         "parse": {
@@ -40,12 +42,14 @@
                     ],
                     "ftitle": [
                         "add_xpath",
-                        "./td[2]/text()"
+                        "./td[3]/a/text()"
                     ]
                 },
 
                 "request": {
-                    "callback": "parse_detail"
+                    "callback": "parse_detail",
+                    "re": "=(.+)",
+                    "url": "http://www.szzfcg.cn/portal/documentView.do?method=view&id={result}"
                 }
             },
             "next_page": {
@@ -55,14 +59,14 @@
         "parse_detail": {
             "parse_article": {
                 "text": {
-                    "xpath": "//table[@id='bulletinContent']"
+                    "xpath": "//body"
                 },
                 "file": {
                     "xpath": "//table[@id='bulletinContent']"
                 },
                 "key_word": {
-                    "money": ["总金额(...)元", "预算金额(...)", "预算金额（元）(...)", "总金额（元）(...)"],
-                    "source_company": ["单位名称：(...)", "采购人及联系人电话(...)", "采购人：(...)", "受(.+?)委托"]
+                    "money": ["采购预算：(...)","合计（单位：元）: (...)", "预算金额（元）(...)", "总金额（元）(...)","总金额(...)元", "预算金额(...)",  "¥(...)", "人民币(...)元"],
+                    "source_company": ["单位名称：(...)", "采购人及联系人电话(...)", "采购人：(...)", "受(.+?)委托", "名      称：(...)", "采购单位：(...)"]
                 }
             }
         }

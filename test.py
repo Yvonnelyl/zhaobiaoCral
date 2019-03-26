@@ -1,4 +1,9 @@
 from scrapy import cmdline
+import redis
 
-
-cmdline.execute('scrapy crawl guangxi'.split())
+name = 'shanxi'
+r = redis.StrictRedis()
+r.delete("zbcral")
+r.lpush('zbcral',name)
+p = 'scrapy crawl ' + name
+cmdline.execute(p.split())

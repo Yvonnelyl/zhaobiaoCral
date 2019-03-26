@@ -86,7 +86,7 @@ class _zhaobiaoSpiderCreator():
         if not date_judge:
             # 添加今日start end date
             cls.cral_conf_dct["end_time"] = (
-                    date.today() - timedelta(1)).strftime(date_format)
+                    date.today()).strftime(date_format)
 
             cls.cral_conf_dct["start_time"]  = (
                     date.today() - timedelta(period)).strftime(date_format)
@@ -97,7 +97,7 @@ class _zhaobiaoSpiderCreator():
             start_times, end_times = [], []
             for date_format in date_format_list:
                 if not date_judge:
-                    start_times.append((date.today() - timedelta(1)).strftime(date_format))
+                    start_times.append((date.today()).strftime(date_format))
                     end_times.append((date.today() - timedelta(period)).strftime(date_format))
                 else:
                     start_times.append(

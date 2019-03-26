@@ -1,0 +1,72 @@
+{
+    "name": "yunnan",
+    "main_url": "http://www.yngp.com",
+
+    "item_value": ["fwebsite", "fregion"],
+        "fwebsite": "云南政府采购网",
+        "fregion": "云南",
+
+
+    "start_url": [
+        "http://www.yngp.com/bulletin.do?method=moreListQuery"
+    ],
+        "method": "post",
+        "param": [
+            {
+                "data": {
+                    "query_startTime": "{self.start_time}",
+                    "query_endTime": "{self.end_time}",
+                    "current": "1",
+                    "rowCount": "10",
+                    "query_sign": "1"
+                }
+            }
+        ],
+
+    "func": {
+        "parse": {
+            "parse_json": {
+                "table_row": {
+                    "method": "json",
+                    "path": "rows"
+                },
+                "item_loader": {
+                    "ftime": [
+                        "json",
+                        "beginday"
+                    ],
+                    "__bulletin_id": [
+                        "json",
+                        "bulletin_id"
+                    ],
+                    "ftitle": [
+                        "json",
+                        "bulletintitle"
+                    ],
+                    "furl": [
+                        "format",
+                        "http://www.yngp.com/newbulletin_zz.do?method=preinsertgomodify&operator_state=1&flag=view&bulletin_id={__bulletin_id}"
+                    ]
+                },
+                "request": {
+                    "callback": "parse_detail"
+                }
+            },
+
+            "next_page": {
+                  "data": "current"
+            }
+        },
+        "parse_detail": {
+            "parse_article": {
+                "text": {
+                    "xpath": "//div[@class='panel-body form-horizontal search-body']"
+                },
+                "key_word": {
+                    "money": ["采购项目预算金额(万元)：[\n\r\t ]*(.+?)[\n\r\t ]*"],
+                    "source_company": ["采购人单位名称：(...)"]
+                }
+            }
+        }
+    }
+}

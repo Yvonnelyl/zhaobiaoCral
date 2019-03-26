@@ -1,0 +1,60 @@
+{
+    "name": "beijing",
+    "main_url": "http://www.ccgp-beijing.gov.cn",
+
+    "item_value": ["fwebsite", "fregion"],
+        "fwebsite": "北京政府采购网",
+        "fregion": "北京",
+
+    "start_url": [
+        "http://www.ccgp-beijing.gov.cn/xxgg/qjzfcggg/qjzbgg/index.html",
+        "http://www.ccgp-beijing.gov.cn/xxgg/qjzfcggg/qjzbgg/index_1.html"
+    ],
+      "method": "get",
+
+    "func": {
+        "parse": {
+            "parse_list": {
+                "table_row": {
+                    "method": "xpath",
+                    "path": "//li"
+                },
+                "item_loader": {
+                    "ftime": [
+                        "add_xpath",
+                        "./span/text()"
+                    ],
+                    "furl": [
+                        "add_xpath",
+                        "./a/@href"
+                    ],
+                    "ftitle": [
+                        "add_xpath",
+                        "./a/text()"
+                    ]
+                },
+                "request": {
+                    "callback": "parse_detail"
+                }
+            },
+
+            "next_page": {
+                  "url_num": "index_([\d]+)"
+            }
+        },
+        "parse_detail": {
+            "parse_article": {
+                "text": {
+                    "xpath": "//body/div[2]/div[3]"
+                },
+                "file": {
+                    "xpath": "//body/div[2]/div[3]"
+                },
+                "key_word": {
+                    "money": [],
+                    "source_company": ["采购单位：(...)地"]
+                }
+            }
+        }
+    }
+}

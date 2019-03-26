@@ -1,0 +1,104 @@
+{
+    "name": "hebei",
+    "main_url": "http://www.ccgp-hebei.gov.cn/province",
+
+    "channelid": "228483",
+
+    "item_value": ["fwebsite", "fregion"],
+        "fwebsite": "河北政府采购网",
+        "fregion": "河北",
+
+    "start_url": [
+        "http://search.hebcz.cn:8080/was5/web/search?page=1&channelid={self.channelid}&perpage=50&outlinepage=10&lanmu=zbgg&purchaseWay={zbt}"
+    ],
+      "method": "get",
+      "param": [
+          {
+              "param": {
+                  "zbt": "公开招标"
+              },
+              "meta": {
+                  "zhaobiao_type": "公开招标"
+              }
+          },
+          {
+      "param": {
+          "zbt": "竞争性磋商"
+      },
+      "meta": {
+          "zhaobiao_type": "竞争性磋商"
+      }
+  },
+          {
+      "param": {
+          "zbt": "竞争性谈判"
+      },
+      "meta": {
+          "zhaobiao_type": "竞争性谈判"
+      }
+  },
+          {
+      "param": {
+          "zbt": "邀请招标"
+      },
+      "meta": {
+          "zhaobiao_type": "邀请招标"
+      }
+  },
+          {
+      "param": {
+          "zbt": "询价"
+      },
+      "meta": {
+          "zhaobiao_type": "询价"
+      }
+  }
+      ],
+
+    "func": {
+        "parse": {
+            "parse_list": {
+                "table_row": {
+                    "method": "xpath",
+                    "path": "//tr[@id='biaoti']"
+                },
+                "item_loader": {
+                    "ftime": [
+                        "add_xpath",
+                        "./following-sibling::*[1]/td[2]/span[1]/text()"
+                    ],
+                    "__meta_source_company": [
+                        "add_xpath",
+                        "./following-sibling::*[1]/td[2]/span[3]/text()"
+                    ],
+                    "furl": [
+                        "add_xpath",
+                        "./td[2]/a/@href"
+                    ],
+                    "ftitle": [
+                        "add_xpath",
+                        "./td[2]/a/text()"
+                    ]
+                },
+                "request": {
+                    "callback": "parse_detail"
+                }
+            },
+
+            "next_page": {
+                  "url_num": "page=([\d]+)"
+            }
+        },
+        "parse_detail": {
+            "parse_article": {
+                "text": {
+                    "xpath": "//span[@class='txt7'][1]"
+                },
+                "key_word": {
+                    "money": ["采购预算金额：(...)"],
+                    "source_company": ["采购人名称：(...)"]
+                }
+            }
+        }
+    }
+}
