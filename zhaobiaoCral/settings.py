@@ -31,6 +31,8 @@ ORACLE_CONN = {
    "user": "hii",
    "password": "hii"
 }
+
+
 REDIS_CONF  = {
    "redis_conf": {"host": "localhost", "port": 6379},
    "queue_name": "zbcral"
