@@ -70,7 +70,8 @@ class BaseSpider(spiders.Spider):
                 yield requests_fun(
                     url=get_url(start_url, p),
                     **get_date(p), **get_meta(p),
-                    callback=self.parse
+                    callback=self.parse,
+                    errback = self.error_back
                 )
 
     def parse_list(self,dct, response, **d):
@@ -86,6 +87,9 @@ class BaseSpider(spiders.Spider):
         else:
             parse_type = "html"
             table = self.__get_table_row(dct, response, parse_type)
+
+        if not table:
+            exit("cral List end")
 
         for row in table:
             # guid
@@ -239,7 +243,8 @@ class BaseSpider(spiders.Spider):
 
     def __get_text(self, dct, article_id, response):
         d = dct["text"]
-
+        # if str(response.request.url) == 'http://www.szzfcg.cn/portal/documentView.do?method=view&id=298965922':
+        #     pass# todo
         self.article_xpath = d["xpath"]  # 给keyword用
         text_item = ItemLoader(item=items.TextItem(), response=response)
         selectors = response.xpath(d["xpath"])
@@ -297,7 +302,7 @@ class BaseSpider(spiders.Spider):
                 if end:
                     re_str = re_list[0] + '[\n\r\t ]*(.+' + end + ')'
                 else:
-                    re_str = re_list[0] + '[\n\r\t ]*(.+)[\n\r\t< ]+'
+                    re_str = re_list[0] + '[\n\r\t ]*(.+)[\n\r\t<地 ]+'
                 return re_str
             else:
                 raise Exception("keyword: key_word error")
@@ -313,54 +318,60 @@ class BaseSpider(spiders.Spider):
         return json.loads(self.__json_path(path_list, response_d))
 
     def __item_loader(self, item_name, dct, response, selector=None, load_type="html"):
-        """
-        :param dct:  item_name and  xpath
-        :param selector:  提取目标
-        :param response: 提取目标
-        """
-        meta_dict = {}
-
-        if load_type == "json":
-            result_item = getattr(items, item_name)()
-            item_dict = dict()
-            for name, param in dct.items():
-                method = param[0]
-                path = param[1]
-                if method == "json":
-                    item_dict[name] = self.__json_path(path, selector)
-                elif method == "format":
-                    item_dict[name] = path.format(self=self, **item_dict)
-                    list_item_dict = {name: value for name, value in item_dict.items() if not name.startswith("__")}
-            result_item.update(list_item_dict)
-            # 传给article页面的meta值
-            meta_dict = {name.replace("__meta_", ""): value
-                         for name, value in item_dict.items() if name.startswith("__meta_")}
-
-        elif load_type == "html":
+            """
+            :param dct:  item_name and  xpath
+            :param selector:  提取目标
+            :param response: 提取目标
+            """
+            meta_dict = {}
             item = getattr(items, item_name)
             row_item_loader = ItemLoader(item=item(), selector=selector)
-            for name, param in dct.items():
-                method = param[0]
-                path = param[1]
-                if name.startswith("__meta_"):
-                    value_list = selector.xpath(path)
-                    if value_list:
-                        value = value_list[0].extract()
-                        meta_dict.update({name.replace("__meta_", ""): value})
-                else:
-                    getattr(row_item_loader, method)(name, path)
+
+            if load_type == "json":
+                # 临时字典 最后只会传给item
+                item_dict = dict()
+                for name, param in dct.items():
+                    method = param[0]                  # 方法 add_xpath 与add_css 等 字符串
+                    path = param[1]                        # 方法xpath与css
+                    if method == "json":
+                        item_dict[name] = self.__json_path(path, selector)
+                    elif method == "format":
+                        item_dict[name] = path.format(self=self, **item_dict)
+                # 字典值传给item
+                for name, value in item_dict.items():
+                    if not name.startswith("__"):
+                        row_item_loader.add_value(name, value)
+                # 传给article页面的meta值
+                meta_dict = {name.replace("__meta_", ""): value
+                             for name, value in item_dict.items() if name.startswith("__meta_")}
+
+
+            elif load_type == "html":
+                for name, param in dct.items():
+                    method = param[0]
+                    path = param[1]
+                    if name.startswith("__meta_"):
+                        value_list = selector.xpath(path)
+                        if value_list:
+                            value = value_list[0].extract()
+                            meta_dict.update({name.replace("__meta_", ""): value})
+                    else:
+                        getattr(row_item_loader, method)(name, path)
+
+
             # 提取出来item
             result_item = row_item_loader.load_item()
+            # url 相对-> 绝对
+            if result_item["furl"]:
+                result_item["furl"] = self._fix_url(result_item["furl"], response)
+            # 判断时间，不是今天就停止
+            if "ftime" in result_item:
+                if result_item["ftime"] >= self.start_time:
+                    return result_item, meta_dict
+                else:
+                    self.page_has_data = 0
+                    return result_item, meta_dict
 
-        # url 相对-> 绝对
-        if result_item["furl"]:
-            result_item["furl"] = self._fix_url(result_item["furl"], response)
-        # 判断时间
-        if "ftime" in result_item:
-            if result_item["ftime"] >= self.start_time:
-                return result_item, meta_dict
-            else:
-                self.page_has_data = 0
 
     def __yield_request(self,url, dct_requests, response, item, meta_dct=None):
         """
@@ -378,6 +389,8 @@ class BaseSpider(spiders.Spider):
         if "url" in dct_requests:
             item = dict(item)
             if "ftime" in item:
+                if not hasattr(self, "date_format"):
+                    self.date_format = ["%Y-%m-%d"]
                 item["ftime"] = [
                     time_change_format(item["ftime"], self.date_format[0], time_format)
                     for time_format in self.date_format
@@ -389,8 +402,20 @@ class BaseSpider(spiders.Spider):
         yield Request(
             url=self._fix_url(url, response),
             meta=response.meta,
-            callback=getattr(self, dct_requests['callback'])
+            callback=getattr(self, dct_requests['callback']),
+            errback=self.error_back
         )
+
+    def error_back(self, response):
+        pass
+        # row_item_loader = ItemLoader(item=items.ErrorPageItem)
+        #
+        # row_item_loader.add_value("fmeta", json.dumps(dict(response.meta)))
+        # row_item_loader.add_value("furl", str(response.requests))
+        # row_item_loader.add_value("fparam", )
+        # row_item_loader.add_value("fmethod", )
+
+
 
     def _get_next_page_url(self, dct, response):
         """

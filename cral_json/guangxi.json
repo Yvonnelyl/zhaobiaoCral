@@ -73,7 +73,7 @@
                 "item_loader": {
                     "ftime": [
                         "add_xpath",
-                        "./a/span[class='date']/text()"
+                        "./span[@class='date']/text()"
                     ],
                     "furl": [
                         "add_xpath",
@@ -81,7 +81,7 @@
                     ],
                     "ftitle": [
                         "add_xpath",
-                        "./a/@titile"
+                        "./a/@title"
                     ]
                 },
                 "request": {

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import redis
-from base.myio import get_file_dir, get_dir_son_file, json_to_dict
+from base.myio import json_to_dict
 from zhaobiaoCral.settings import REDIS_CONF
 
 
@@ -11,7 +11,7 @@ class  Schedule():
         :param schedule:  任务计划模块
         """
         # redis 连接
-        self.redis_conn = redis_conf["redis_conn"]
+        self.redis_conn = redis_conf["redis_conf"]
         self.queque_name = redis_conf["queue_name"]
         self.r = redis.StrictRedis(**self.redis_conn)
 
@@ -61,5 +61,5 @@ class  Schedule():
 
 
 if __name__ == '__main__':
-    s  = Schedule()
+    s  = Schedule(REDIS_CONF)
     s.run()

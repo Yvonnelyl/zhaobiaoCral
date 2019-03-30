@@ -1,0 +1,85 @@
+{
+    "name": "zhejiang",
+    "main_url": "http://www.zjzfcg.gov.cn/",
+
+    "item_value": ["fwebsite", "fregion"],
+        "fwebsite": "浙江政府采购网",
+        "fregion": "浙江",
+
+    "start_url": "http://manager.zjzfcg.gov.cn/cms/api/cors/getRemoteResults?pageSize=15&pageNo=1&sourceAnnouncementType={code}&url=http%3A%2F%2Fnotice.zcy.gov.cn%2Fnew%2FnoticeSearch",
+
+    "param": [
+        {
+            "param": {
+                "code": "3001"
+            },
+            "meta": {
+                "zhaobiao_type": "公开招标"
+            }
+        },
+        {
+            "param": {
+                "code": "3002"
+            },
+            "meta": {
+                "zhaobiao_type": "竞争性谈判"
+            }
+        },
+        {
+            "param": {
+                "code": "3003"
+            },
+            "meta": {
+                "zhaobiao_type": "询价"
+            }
+        }
+    ],
+    "func": {
+        "parse": {
+            "parse_json": {
+                "table_row": {
+                    "method": "json",
+                    "path": "articles"
+                },
+                "item_loader": {
+                    "ftime": [
+                        "json",
+                        "pubDate"
+                    ],
+                    "furl": [
+                        "json",
+                        "url"
+                    ],
+                    "ftitle": [
+                        "json",
+                        "title"
+                    ]
+                },
+                "request": {
+                    "re": "noticeId=([\d]+)",
+                    "url": "http://manager.zjzfcg.gov.cn/cms/api/cors/getRemoteResults?noticeId={result}&url=http%3A%2F%2Fnotice.zcy.gov.cn%2Fnew%2FnoticeDetail",
+                    "callback": "parse_detail"
+                }
+            },
+
+            "next_page": {
+                  "url_num": "pageNo=([\d]+)"
+            }
+        },
+        "parse_detail": {
+			"json2html":"noticeContent",
+            "parse_article": {
+                "text": {
+                    "xpath": "/*"
+                },
+                "file": {
+                    "xpath": "//ul[@class='fjxx']"
+                },
+                "key_word": {
+                    "money": [],
+                    "source_company": ["采购人名称：(...)：", "采购人：(...)："]
+                }
+            }
+        }
+    }
+}

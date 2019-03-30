@@ -1,12 +1,11 @@
-import json
-import redis
+import json, os, redis
 from .zhaobiaoBaseSpider import BaseSpider
 import datetime
 from datetime import date, timedelta
 from base.mydate import time_change_format
 
 
-class _zhaobiaoSpiderCreator():
+class zhaobiaoSpiderCreator():
     """
     招标爬虫生成器，当用cmdline运行scrapy爬虫的时候必定会用此类生成爬虫
     """
@@ -130,7 +129,10 @@ class _GetCralConf():
         test
         :return:
         """
-        with open(r'C:\Users\Admin\PycharmProjects\scrapyProjects\zhaobiaoCral\test1.json', 'rb') as f:
+        project_dir = os.path.abspath(os.path.dirname(__file__))
+        # 保存路径
+        test_file_path = os.path.join(project_dir, "test_spider.json")
+        with open(test_file_path, 'rb') as f:
             json_ = f.read()
             return json.loads(json_)
 
@@ -159,5 +161,5 @@ class _GetCralConf():
 from ..settings import REDIS_CONF
 
 # create new spider
-FleshSpider = _zhaobiaoSpiderCreator(
+FleshSpider = zhaobiaoSpiderCreator(
     "redis", **REDIS_CONF)

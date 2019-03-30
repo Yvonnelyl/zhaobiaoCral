@@ -1,0 +1,70 @@
+{
+  "3xi":{
+    "period": [1, "day"],
+    "at": "18:38"
+  },
+  "anhui":{
+    "period": [1, "day"],
+    "at": "18:38"
+  },
+    "beijing":{
+    "period": [1, "day"],
+    "at": "18:38"
+  },
+  "chongqing":{
+    "period": [1, "day"],
+    "at": "18:38"
+  },
+    "guangxi":{
+    "period": [1, "day"],
+    "at": "18:38"
+  },
+  "hainan":{
+    "period": [1, "day"],
+    "at": "18:38"
+  },
+    "hefei":{
+    "period": [1, "day"],
+    "at": "18:38"
+  },
+      "hebei":{
+    "period": [1, "day"],
+    "at": "18:38"
+  },
+  "henan":{
+    "period": [1, "day"],
+    "at": "18:38"
+  },
+    "hunan":{
+    "period": [1, "day"],
+    "at": "18:38"
+  },
+  "jiangsu":{
+    "period": [1, "day"],
+    "at": "18:38"
+  },
+    "shandong":{
+    "period": [1, "day"],
+    "at": "18:38"
+  },
+  "shanxi":{
+    "period": [1, "day"],
+    "at": "18:38"
+  },
+    "shenzhen":{
+    "period": [1, "day"],
+    "at": "18:38"
+  },
+  "sichuan":{
+    "period": [1, "day"],
+    "at": "18:38"
+  },
+    "yunnan":{
+    "period": [1, "day"],
+    "at": "18:38"
+  },
+      "zhejiang":{
+    "period": [1, "day"],
+    "at": "18:38"
+  }
+}

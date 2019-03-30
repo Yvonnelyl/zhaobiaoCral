@@ -40,7 +40,7 @@
                         "NOTICE_TITLE"
                     ],
                     "ftime": [
-                        "add_xpath",
+                        "json",
                         "NEWWORK_DATE"
                       ],
                     "__noticeid": [

@@ -126,8 +126,8 @@ class OracleAsyncPipeline():
         try:
             tx.execute(sql, cln_values)
         except Exception:
-            print(cln_values)
-            raise Exception(cln_values)
+            pass
+        #todo
 
 
     def close_spider(self, spider):

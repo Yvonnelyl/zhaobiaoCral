@@ -14,20 +14,6 @@ def time_change_format(zw_time, old_format, new_format):
     return en_time
 
 
-def time_list_zw_to_en(zw_time_list):
-    """
-    把中文格式时间的列表：[xx年xx月xx日,...,yy年yy月yy日]
-    转成普通时间列表：[xx-xx-xx,...,yy-yy-yy]
-    是上面方法   time_zw_to_en  的扩展
-    :param zw_time_list: 中文格式时间列表
-    :return:             英文格式时间列表
-    """
-    time_list = []
-    for time_zw in zw_time_list:
-        time_list.append(time_zw_to_en(time_zw))
-    return time_list
-
-
 def get_datetime_today():
     """
     得到今天的日期（str）

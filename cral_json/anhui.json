@@ -79,7 +79,7 @@
                     "item_loader": {
                         "ftime": [
                             "add_xpath",
-                            "substring(./td[2]/a/text(),2,11)"
+                            "./td[2]/a/text()"
                         ],
                         "furl": [
                             "add_xpath",

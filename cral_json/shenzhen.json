@@ -1,6 +1,6 @@
 {
     "name": "shenzhen",
-    "main_url": "http://www.cgzx.sz.gov.cn",
+    "main_url": "http://www.szzfcg.cn",
 
     "item_value": ["fwebsite", "fregion"],
         "fwebsite": "深圳政府采购网",
@@ -34,7 +34,7 @@
                 "item_loader": {
                     "ftime": [
                         "add_xpath",
-                        "./td[-1]/text()"
+                        "./td[last()]/text()"
                       ],
                     "furl": [
                         "add_xpath",
@@ -65,7 +65,7 @@
                     "xpath": "//table[@id='bulletinContent']"
                 },
                 "key_word": {
-                    "money": ["采购预算：(...)","合计（单位：元）: (...)", "预算金额（元）(...)", "总金额（元）(...)","总金额(...)元", "预算金额(...)",  "¥(...)", "人民币(...)元"],
+                    "money": ["¥(...)","竞价采购(...).", "采购预算：(...)", "预算金额（元）(...)", "总金额（元）(...)", "预算金额(...)",   "人民币(...)元"],
                     "source_company": ["单位名称：(...)", "采购人及联系人电话(...)", "采购人：(...)", "受(.+?)委托", "名      称：(...)", "采购单位：(...)"]
                 }
             }
