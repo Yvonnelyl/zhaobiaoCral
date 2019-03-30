@@ -27,9 +27,9 @@ ITEM_TABLE = {
     "KeywordItem": "fzbKeyword"
 }
 ORACLE_CONN = {
-   "dsn": "200.100.100.69/dgr",
-   "user": "hiibase",
-   "password": "hiibase"
+   "dsn": "localhost/food",
+   "user": "hii",
+   "password": "hii"
 }
 REDIS_CONF  = {
    "redis_conf": {"host": "localhost", "port": 6379},
